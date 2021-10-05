@@ -8,6 +8,7 @@ El programa se compila con <code> ./script.sh </code>  o <code> bash script.sh <
     <li><code>flex calc-lexico.l </code></li>
     <li><code>bison -d calc-sintaxis.y </code></li>
     <li><code>gcc lex.yy.c calc-sintaxis.tab.c </code></li>
+
 ## Ejecucion
 
 ### Ejecucion de un caso determinado
