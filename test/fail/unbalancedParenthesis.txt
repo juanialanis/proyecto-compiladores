@@ -18,5 +18,3 @@ else
 {
 return print_int(inc(y));
 }
-}
-}

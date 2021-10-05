@@ -7,6 +7,8 @@ return x + 1;
 integer get_int() extern;
 void print_int(integer i) extern ;
 void main()
+/* Este seria un comentario multilinea, pero se deberia romper por -> */
+y  aca seguiria si funcionara correctamente  */
 {
 integer y;
 y = get_int();

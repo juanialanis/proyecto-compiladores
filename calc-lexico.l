@@ -21,11 +21,29 @@ digit [0-9]
                                 printf("INT : %d\n",atoi(yytext)); 
                                 return INT;}   
 
-[+/*%]                     { printf("AOP: %s\n",yytext);
-                                return AOP; }
+"+"                     { printf("OPERATOR: %s\n",yytext);
+                                return TPLUS; }
 
-["&&""||"]                     { printf("LOP: %s\n",yytext);
-                                return LOP; }
+"/"                     { printf("OPERATOR: %s\n",yytext);
+                                return TDIV; }
+
+"-"                     { printf("OPERATOR: %s\n",yytext);
+                                return TMINUS; }
+
+"*"                     { printf("OPERATOR: %s\n",yytext);
+                                return TMULT; }
+
+"!"                     { printf("OPERATOR: %s\n",yytext);
+                                return TNOT; }
+
+"%"                     { printf("OPERATOR: %s\n",yytext);
+                                return TMOD; }
+
+"||"                     { printf("OPERATOR: %s\n",yytext);
+                                return TOR; }
+
+"&&"                     { printf("OPERATOR: %s\n",yytext);
+                                return TAND; }
 
 "Program"                       { printf("PROGRAM: %s\n",yytext);
                                 return PROGRAM; }
@@ -57,21 +75,35 @@ digit [0-9]
 "void"                        { printf("VOID: %s\n",yytext);
                                 return VOID; }
 
-"true"|"false"                { printf("BOOLEAN: %s\n",yytext);
-                               return BOOLEAN; }
+"true"                { printf("BOOLEAN: %s\n",yytext);
+                               return BTRUE; }
 
-{letter}({letter}|{digit}|'_')* { yylval.s=(char *) malloc(sizeof(yytext)*yyleng);
+"false"                { printf("BOOLEAN: %s\n",yytext);
+                               return BFALSE; }
+
+{letter}({letter}|{digit}|"_")* { yylval.s=(char *) malloc(sizeof(yytext)*yyleng);
                                 strcpy(yylval.s,yytext);
                                 printf("ID : %s\n",yytext);
                                 return ID;}
 
-[;()={},-]                   { printf("SYMBOL: %s\n",yytext);
+[;()={},]                   { printf("SYMBOL: %s\n",yytext);
                                 return *yytext;}
 
-['<''>'"=="]                  { printf("CMP: %s\n",yytext);
-                                return CMP; }
+">"                  { printf("COMPARATION SYMBOL: %s\n",yytext);
+                                return HIGHER; }
+                                
+"<"                  { printf("COMPARATION SYMBOL: %s\n",yytext);
+                                return LOWER; }
 
-.|\n                          ; /* ignore all the rest */
+"=="                  { printf("COMPARATION SYMBOL: %s\n",yytext);
+                                return EQUAL; }
+
+"//".*                                    { /* ONE LINE COMMENT, DO NOTHING */ }
+
+[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]       { /* MULTI LINE COMMENT, DO NOTHING */ }
+
+
+.|"//"|\n                          ; /* ignore all the rest */
 
 %%
 

@@ -11,9 +11,13 @@ int yyerror(char *);
 %union { int i; char *s;}
  
 %token<i> INT 
-%token<s> ID TMENOS BOOLEAN AOP LOP CMP PROGRAM EXTERN WHILE BOOL INTEGER IF ELSE THEN VOID RETURN
+%token<s> ID TMENOS BTRUE BFALSE EQUAL LOWER HIGHER TMINUS TNOT TPLUS TMOD TDIV TMULT TOR TAND PROGRAM EXTERN WHILE BOOL INTEGER IF ELSE THEN VOID RETURN
 
-%left '<' '>' "==" '+' '*' '/' '%' "&&" "||" '!' '-'
+%left AND OR
+%nonassoc LOWER HIGHER EQUAL
+%left TPLUS TMINUS
+%left TMULT TDIV TMOD
+%left UNARY
 %%
 program: PROGRAM '{' variables methods '}'  
        | PROGRAM '{' methods '}' 
@@ -90,26 +94,29 @@ expressions: expressions ',' expression
      | expression 
 ;
 
-expression: terminal              
-        | terminal operator expression 
-        | operator expression 
-        | '(' expression ')' 
-;
-
-
-operator: '-'                 
-        | '!'
-        | CMP
-        | LOP
-        | AOP
-;
-
-terminal: ID                
-        | method_call 
+expression:ID
+        | method_call
         | literal
+        | expr_bin
+        | TMINUS expression %prec UNARY
+        | TNOT expression %prec UNARY
+        | '(' expression ')'
 ;
+
+expr_bin: expression TPLUS expression
+        | expression TMINUS expression
+        | expression  TMULT expression
+        | expression  TDIV expression
+        | expression  TMOD expression
+        | expression LOWER expression
+        | expression  HIGHER expression
+        | expression  EQUAL expression
+        | expression  AND expression
+        | expression OR expression
+        ;
 
 literal: INT 
-       | BOOLEAN
+       | BTRUE
+       | BFALSE
 ;
 %%

@@ -48,20 +48,32 @@ extern int yydebug;
     INT = 258,
     ID = 259,
     TMENOS = 260,
-    BOOLEAN = 261,
-    AOP = 262,
-    LOP = 263,
-    CMP = 264,
-    PROGRAM = 265,
-    EXTERN = 266,
-    WHILE = 267,
-    BOOL = 268,
-    INTEGER = 269,
-    IF = 270,
-    ELSE = 271,
-    THEN = 272,
-    VOID = 273,
-    RETURN = 274
+    BTRUE = 261,
+    BFALSE = 262,
+    EQUAL = 263,
+    LOWER = 264,
+    HIGHER = 265,
+    TMINUS = 266,
+    TNOT = 267,
+    TPLUS = 268,
+    TMOD = 269,
+    TDIV = 270,
+    TMULT = 271,
+    TOR = 272,
+    TAND = 273,
+    PROGRAM = 274,
+    EXTERN = 275,
+    WHILE = 276,
+    BOOL = 277,
+    INTEGER = 278,
+    IF = 279,
+    ELSE = 280,
+    THEN = 281,
+    VOID = 282,
+    RETURN = 283,
+    AND = 284,
+    OR = 285,
+    UNARY = 286
   };
 #endif
 
@@ -73,7 +85,7 @@ union YYSTYPE
 #line 11 "calc-sintaxis.y" /* yacc.c:1909  */
  int i; char *s;
 
-#line 77 "calc-sintaxis.tab.h" /* yacc.c:1909  */
+#line 89 "calc-sintaxis.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
