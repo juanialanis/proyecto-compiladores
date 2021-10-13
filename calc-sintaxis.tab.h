@@ -47,33 +47,32 @@ extern int yydebug;
   {
     INT = 258,
     ID = 259,
-    TMENOS = 260,
-    BTRUE = 261,
-    BFALSE = 262,
-    EQUAL = 263,
-    LOWER = 264,
-    HIGHER = 265,
-    TMINUS = 266,
-    TNOT = 267,
-    TPLUS = 268,
-    TMOD = 269,
-    TDIV = 270,
-    TMULT = 271,
-    TOR = 272,
-    TAND = 273,
-    PROGRAM = 274,
-    EXTERN = 275,
-    WHILE = 276,
-    BOOL = 277,
-    INTEGER = 278,
-    IF = 279,
-    ELSE = 280,
-    THEN = 281,
-    VOID = 282,
-    RETURN = 283,
-    AND = 284,
-    OR = 285,
-    UNARY = 286
+    BTRUE = 260,
+    BFALSE = 261,
+    EQUAL = 262,
+    LOWER = 263,
+    HIGHER = 264,
+    TMINUS = 265,
+    TNOT = 266,
+    TPLUS = 267,
+    TMOD = 268,
+    TDIV = 269,
+    TMULT = 270,
+    TOR = 271,
+    TAND = 272,
+    PROGRAM = 273,
+    EXTERN = 274,
+    WHILE = 275,
+    BOOL = 276,
+    INTEGER = 277,
+    IF = 278,
+    ELSE = 279,
+    THEN = 280,
+    VOID = 281,
+    RETURN = 282,
+    AND = 283,
+    OR = 284,
+    UNARY = 285
   };
 #endif
 
@@ -82,10 +81,10 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 11 "calc-sintaxis.y" /* yacc.c:1909  */
- int i; char *s;
+#line 15 "calc-sintaxis.y" /* yacc.c:1909  */
+ int i; char *s; struct treeN *tn; struct idList* idL
 
-#line 89 "calc-sintaxis.tab.h" /* yacc.c:1909  */
+#line 88 "calc-sintaxis.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

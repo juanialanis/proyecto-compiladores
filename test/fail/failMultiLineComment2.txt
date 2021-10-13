@@ -1,0 +1,24 @@
+Program
+{
+integer inc(integer x)
+{
+return x + 1;
+}
+integer get_int() extern;
+void print_int(integer i) extern ;
+void main()
+/* Este seria un comentario el cual seria ignorado completamente
+y  ademas es un comentario multilinea 
+{
+integer y;
+y = get_int();
+if (y == 1) then
+{
+print_int(y);
+}
+else
+{
+return print_int(inc(y));
+}
+}
+}
