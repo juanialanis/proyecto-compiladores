@@ -36,29 +36,32 @@ int yyerror(char *);
 prog: PROGRAM '{' variables methods '}'  { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 $$ = newTree(root, $3, $4); 
-                                                //printTree($$,0);
+                                                printTree($$,0);
                                                 createLevelOfSymbolTable($$);
-                                                checkValidation($$);
+                                                //checkValidation($$);
                                         };
        | PROGRAM '{' methods '}'          { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 $$ = newTree(root, $3, NULL); 
                                                 createLevelOfSymbolTable($$);
-                                                checkValidation($$);
+                                                printTree($$,0);
+                                                //checkValidation($$);
                                         };      
        | PROGRAM '{' variables '}'      { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 $$ = newTree(root, NULL, $3); 
                                                 printf("estoy aca 3 ");
                                                 createLevelOfSymbolTable($$);
-                                                checkValidation($$);
+                                                printTree($$,0);
+                                                //checkValidation($$);
                                         };
        | PROGRAM '{' '}'                { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 $$ = newTree(root, NULL, NULL); 
                                                 printf("estoy aca 4");
                                                 createLevelOfSymbolTable($$);
-                                                checkValidation($$);
+                                                printTree($$,0);
+                                                //checkValidation($$);
                                         };
 ;  
 
@@ -250,10 +253,10 @@ expressions: expressions ',' expression         {
                                                 }
 ;
 
-expression:ID   { 
-                        node* root = newNode(0, yylineno, None, NONE, $1, NULL);
-                        $$ = newTree(root,NULL,NULL);      
-                }
+expression:ID                                   { 
+                                                        node* root = newNode(0, yylineno, None, VAR, $1, NULL);
+                                                        $$ = newTree(root,NULL,NULL);      
+                                                }
         | method_call                           {
                                                         $$ = $1;
                                                 }

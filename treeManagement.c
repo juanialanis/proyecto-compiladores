@@ -4,7 +4,7 @@
 #include "treeManagement.h"
 #define COUNT 15
 
-char* TLabelString[] = { "VDECL", "NONE", "NONEBLOCK", "BLOCKDECL", "IFTHEN", "IFTELSE", "MCALL" ,"MDECL", "MDECLTYPE", "EXT", "STMT","STMTASSIGN", "STMTWHILE", "SUMA", "MULTIPLICACION", "RESTA", "SEMICOLON", "DIVISION", "LAND", "LOR", "MAYOR","MENOR", "COMMA", "NEGATIVEEXP", "NOTEXP" ,"LMOD","LEQUAL","PROG", "RET", "CONST"};
+char* TLabelString[] = { "VAR", "VDECL", "NONE", "NONEBLOCK", "BLOCKDECL", "IFTHEN", "IFTELSE", "MCALL" ,"MDECL", "MDECLTYPE", "EXT", "STMT","STMTASSIGN", "STMTWHILE", "SUMA", "MULTIPLICACION", "RESTA", "SEMICOLON", "DIVISION", "LAND", "LOR", "MAYOR","MENOR", "COMMA", "NEGATIVEEXP", "NOTEXP" ,"LMOD","LEQUAL","PROG", "RET", "CONST"};
 
 char* TTypeString[] = {"None", "Int", "Bool", "Void" };
 
@@ -283,15 +283,18 @@ void createSubTableSymbol(tree* tree, symbolTable* tope) {
 
 enum TType checkTypes(tree* tree){
     if (tree == NULL) return None; 
-    if (tree->atr->label == VDECL || tree->atr->label == CONST)
+    if (tree->atr->label == VAR || tree->atr->label == CONST)
         return tree->atr->type;
-    if (tree->atr->label == SUMA && tree->atr->label == MULTIPLICACION && tree->atr->label == RESTA && tree->atr->label == DIVISION && tree->atr->type == None){
+    if (tree->atr->label == SUMA || tree->atr->label == MULTIPLICACION || tree->atr->label == RESTA || tree->atr->label == DIVISION){
         tree->atr->type = checkTypes(tree->left);
-        if (tree->atr->type != checkTypes(tree->right)){
+        if (tree->atr->type != Int || tree->atr->type != checkTypes(tree->right)){
             return None; 
         } else {
             return tree->atr->type;
         }
+    }
+    if (tree->atr->label == IFTHEN){
+        checkValidation(tree->left);
     }
     return None;
 }
@@ -299,7 +302,7 @@ enum TType checkTypes(tree* tree){
 // Demo de como verificaria la valides de el codigo
 void checkValidation(tree* tree){
     if (tree == NULL) return; 
-    if (tree->atr->label==STMT || tree->atr->label==MDECL){
+    if (tree->atr->label==STMT || tree->atr->label==MDECL || tree->atr->label==LEQUAL){
         if (checkTypes(tree->left) != checkTypes(tree->right)){
             printf("tipos incompatibles\n");
         }
