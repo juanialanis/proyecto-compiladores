@@ -1,0 +1,200 @@
+Program {
+
+
+    integer print_separador() extern; 
+    void print(integer i) extern;
+    
+    //Muestra los primenos "n" numeros de la serie de Fibonacci. 
+    integer fibonacci(integer n)
+      {
+        integer i, term1, term2, nextTerm;
+        term1 = 0;
+        term2 = 1;
+        i = 1;
+        while (i < n)
+          {
+            nextTerm = term1 + term2;
+            term1 = term2;
+            term2 = nextTerm;
+            i = i+1;
+          }
+        return term2;
+      }
+
+    // potencia de  x a la n
+      integer potencia (integer x, integer n)
+      {
+        integer i,r;
+        i = 1;
+        r = x;
+        while (i<n)
+        	{
+        		r = r*x;
+        		i = i+1;
+        	}
+        return r;
+      }
+
+    // retorna el factorial de v
+    integer factorial (integer v)
+    	{
+      	integer limit,c,fact;
+      	limit = 15;
+      	if ( v > limit) then
+        	{ 
+          	return (-1);
+        	}
+      	else 
+        	{ 
+          	c = 0;
+          	fact = 1;
+          	while (c<v)
+            	{
+              	c = c+1;
+              	fact = fact*c;
+            	}
+          	return fact;
+        	}
+    	}
+
+    // retorna el n esimo primo
+    integer nthprime (integer n) 
+      {
+        integer i, divs;
+        bool divides;
+        i = 0;
+        divs = 2;
+        n = n+1;
+        while ( n > 0) 
+          {
+            divides = false; 
+            i = i + 1;
+            while ( ! divides && divs < i) 
+              {
+                if ((i%divs) == 0) then
+                  {
+                    divides = true;
+                  }
+                else
+                  {
+                    divs = divs+1;
+                  }
+              }
+            divs = 2;
+            if (!divides) then
+              {
+                n = n-1;
+              }
+          }
+        return i;
+    }
+
+    // retorna el maximo comun divisor de a y b,
+    integer gcd (integer a, integer b) 
+      {
+        integer i, result;
+        i = 1;
+        result = i;
+        while ( i < (a+b)) 
+          {
+            if (((a % i) == 0) &&  ((b%i) ==0 )) then
+              {
+                result = i;
+              }
+            i = i+1;
+          }
+        return result;
+      }
+
+    void test()
+      {
+        integer aux, result;
+        result = gcd(factorial(3),factorial(4)); //gcd(6,24) = 6
+        print(result);
+        aux = nthprime(gcd(factorial(3),factorial(4))); //nthprime(6) = 13
+        print(aux);
+        aux = potencia(3,nthprime(gcd(factorial(3),factorial(4)))); //potencia(3,13) = 1594323
+        print(aux);
+      }
+
+    // invoca test
+    void test1()
+      {
+        integer aux;
+        aux = 2; 
+        test();
+        print(aux);
+      }
+
+    integer main()
+      {
+        integer x, i, aux, res;
+        // test fibonacci 
+        print_separador(); //Imprime una linea para dividir porque no puedo poner printf("-----------\n")
+        x=5; // lee la cantidad de veces que ejecutara la funcion
+        i = 0;
+        aux=1; // lee los datos para invocar a la funcion
+        
+        while (i<x)
+          {
+            res = fibonacci(aux);
+            aux = aux + 1;
+            print(res);
+            i=i+1;
+          }   
+             
+        // test factorial entero
+        print_separador(); //Imprime una linea para dividir porque no puedo poner printf("-----------\n")
+        x=4; // lee la cantidad de veces que ejecutara la funcion
+        i = 0;
+        aux=3; // lee los datos para invocar a la funcion
+        while (i<x)
+          {
+            res = factorial(aux);
+            aux = aux + 1;
+            print(res);
+            i=i+1;
+          }
+          
+          
+        // test nthprime entero
+        print_separador(); //Imprime una linea para dividir porque no puedo poner printf("-----------\n")
+        x=10; // lee la cantidad de veces que ejecutara la funcion
+        i = 0;
+        aux = 4;
+        while (i<x)
+          {
+            res = nthprime(aux);
+            aux = aux + 1;
+            print(res);
+            i=i+1;
+          }
+        // test gcd entero    
+        print_separador(); //Imprime una linea para dividir porque no puedo poner printf("-----------\n")
+        x=3; // lee la cantidad de veces que ejecutara la funcion
+        i = 0;
+        while (i<x)
+          { 
+            res = gcd(8+i,2+i); //lee los datos para invocar a la funcion
+            print(res);
+            i=i+1;
+          }
+        // test potencia entero
+        print_separador(); //Imprime una linea para dividir porque no puedo poner printf("-----------\n")
+        x=3; // lee la cantidad de veces que ejecutara la funcion
+        i = 0;
+        while (i<x)
+          {
+            res = potencia(2+i,1+i); // lee los datos para invocar a la funcion
+            print(res);
+            i=i+1;
+          }
+        // test test
+        print_separador(); //Imprime una linea para dividir porque no puedo poner printf("-----------\n")
+        test();
+        // test test1 
+        print_separador(); //Imprime una linea para dividir porque no puedo poner printf("-----------\n")
+        test1();
+        return 1;
+      }
+  }

@@ -24,6 +24,22 @@ typedef struct treeN {
     struct treeN* right;
 } tree;
 
+//struct that defines a symbols table
+typedef struct symbolTable{
+    node* cSymbol;
+    struct symbolTable* next;
+} symbolTable;
+
+
+typedef struct stStack {
+    struct symbolTable* tope;
+    struct stStack* next;
+} stStack;
+
+
+//table of symbols
+extern stStack* stackOfLevels;
+
 ids* newIdList(char* id, ids *next);
 
  //method that returns the string equivalent to the types
@@ -50,4 +66,24 @@ char* getValue(int i);
 char* treetoString(node* atr);
 
 //method that generates a sample of the tree
-void printTree(tree* tree);
+//void printTree(tree* tree);
+
+//method that generates a sample of the tree IN ORDER
+void printTree(tree* tree, int space);
+
+//method that creates a new table of symbols
+symbolTable* newTableOfSymbols(node* s);
+
+void createLevelZero(tree* tree, symbolTable* tope);
+
+void addLast(symbolTable* new, symbolTable* head);
+
+stStack* newStack(symbolTable* s);
+
+void createLevelOfSymbolTable(tree* tree);
+
+void createLevels(tree* tree);
+
+void createSubTableSymbol(tree* tree, symbolTable* tope);
+
+int searchSimbol(char* id, symbolTable* st);
