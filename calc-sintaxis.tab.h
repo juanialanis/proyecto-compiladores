@@ -105,7 +105,7 @@
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
 #line 15 "calc-sintaxis.y"
-{ int i; char *s; struct treeN *tn; struct idList* idL}
+{ int i; char *s; struct treeN *tn; struct idList* idL;}
 /* Line 1529 of yacc.c.  */
 #line 111 "calc-sintaxis.tab.h"
 	YYSTYPE;

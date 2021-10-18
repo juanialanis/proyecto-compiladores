@@ -166,7 +166,7 @@ int yyerror(char *);
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
 #line 15 "calc-sintaxis.y"
-{ int i; char *s; struct treeN *tn; struct idList* idL}
+{ int i; char *s; struct treeN *tn; struct idList* idL;}
 /* Line 193 of yacc.c.  */
 #line 172 "calc-sintaxis.tab.c"
 	YYSTYPE;

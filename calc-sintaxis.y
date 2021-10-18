@@ -12,7 +12,7 @@ int yyerror(char *);
 
 %}
  
-%union { int i; char *s; struct treeN *tn; struct idList* idL}
+%union { int i; char *s; struct treeN *tn; struct idList* idL;}
  
 %token<i> INT 
 %token<s> ID BTRUE BFALSE EQUAL LOWER HIGHER TMINUS TNOT TPLUS TMOD TDIV TMULT TOR TAND PROGRAM EXTERN WHILE BOOL INTEGER IF ELSE THEN VOID RETURN
