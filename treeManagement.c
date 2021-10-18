@@ -10,6 +10,7 @@ char* getType(enum TType type){
         case None: return "None";
         case Bool: return "Bool";
         case Int: return "Int";
+        case Void: return "Void";
     }
 }
 
@@ -27,6 +28,7 @@ char* getLabel(enum TLabel label){
         case RET: return "RETURN";
         case PROG: return "PROG";
         case SEMICOLON: return "SEMICOLON";
+        default: return "NO LABEL SELECTED";
     }
 }
 
