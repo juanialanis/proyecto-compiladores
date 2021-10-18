@@ -38,23 +38,27 @@ prog: PROGRAM '{' variables methods '}'  {
                                                 $$ = newTree(root, $3, $4); 
                                                 //printTree($$,0);
                                                 createLevelOfSymbolTable($$);
+                                                checkValidation($$);
                                         };
        | PROGRAM '{' methods '}'          { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 $$ = newTree(root, $3, NULL); 
                                                 createLevelOfSymbolTable($$);
+                                                checkValidation($$);
                                         };      
        | PROGRAM '{' variables '}'      { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 $$ = newTree(root, NULL, $3); 
                                                 printf("estoy aca 3 ");
                                                 createLevelOfSymbolTable($$);
+                                                checkValidation($$);
                                         };
        | PROGRAM '{' '}'                { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 $$ = newTree(root, NULL, NULL); 
                                                 printf("estoy aca 4");
                                                 createLevelOfSymbolTable($$);
+                                                checkValidation($$);
                                         };
 ;  
 
@@ -315,15 +319,15 @@ expr_bin: expression TPLUS expression   {
         ;
 
 literal: INT    {
-                        node* root = newNode($1, 0, Int, NONE, NULL, NULL); 
+                        node* root = newNode($1, 0, Int, CONST, NULL, NULL); 
                         $$ = newTree(root, NULL, NULL);
                 }
        | BTRUE  {
-                        node* root = newNode(1, 0, Bool, NONE, NULL, NULL); 
+                        node* root = newNode(1, 0, Bool, CONST, NULL, NULL); 
                         $$ = newTree(root, NULL, NULL);
                 }
        | BFALSE {
-                        node* root = newNode(0, 0, Bool, NONE, NULL, NULL); 
+                        node* root = newNode(0, 0, Bool, CONST, NULL, NULL); 
                         $$ = newTree(root, NULL, NULL);
                 }
 ;

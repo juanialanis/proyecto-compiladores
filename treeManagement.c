@@ -4,7 +4,7 @@
 #include "treeManagement.h"
 #define COUNT 15
 
-char* TLabelString[] = { "VDECL", "NONE", "NONEBLOCK", "BLOCKDECL", "IFTHEN", "IFTELSE", "MCALL" ,"MDECL", "MDECLTYPE", "EXT", "STMT","STMTASSIGN", "STMTWHILE", "SUMA", "MULTIPLICACION", "RESTA", "SEMICOLON", "DIVISION", "LAND", "LOR", "MAYOR","MENOR", "COMMA", "NEGATIVEEXP", "NOTEXP" ,"LMOD","LEQUAL","PROG", "RET"};
+char* TLabelString[] = { "VDECL", "NONE", "NONEBLOCK", "BLOCKDECL", "IFTHEN", "IFTELSE", "MCALL" ,"MDECL", "MDECLTYPE", "EXT", "STMT","STMTASSIGN", "STMTWHILE", "SUMA", "MULTIPLICACION", "RESTA", "SEMICOLON", "DIVISION", "LAND", "LOR", "MAYOR","MENOR", "COMMA", "NEGATIVEEXP", "NOTEXP" ,"LMOD","LEQUAL","PROG", "RET", "CONST"};
 
 char* TTypeString[] = {"None", "Int", "Bool", "Void" };
 
@@ -150,8 +150,7 @@ symbolTable* addLast(symbolTable* new, symbolTable* head) {
 
 int searchSimbol(char* id, symbolTable* st) {
 
-    while (st != NULL) {
-    
+    while (st != NULL && st->cSymbol != NULL) {
         if (!strcmp(st->cSymbol->text,id))
             return 1;
         st = st->next;
@@ -175,8 +174,7 @@ stStack* addLevel(symbolTable* s){
 
 
 void createLevelOfSymbolTable(tree* tree) {
-    node* idNode = newNode(0, 0, 0, 0, "", NULL);
-    symbolTable* st = newTableOfSymbols(idNode);
+    symbolTable* st = malloc(sizeof(symbolTable));
     createLevelZero(tree,st);
     stackOfLevels = newStack(st);
     
@@ -229,8 +227,7 @@ void createLevels(tree* tree) {
         return;
     if (tree->atr->label == MDECL && tree->left->atr->label == MDECLTYPE && tree->right->atr->label == BLOCKDECL)
     {
-        node* idNode = newNode(0, 0, 0, 0, "", NULL);
-        symbolTable* st2 = newTableOfSymbols(idNode);
+        symbolTable* st2 = malloc(sizeof(symbolTable));
         stStack* newStackLevel = newStack(st2);
         newStackLevel->next = stackOfLevels;
         stackOfLevels = newStackLevel;
@@ -243,8 +240,7 @@ void createLevels(tree* tree) {
     else if (tree->atr->label == BLOCKDECL)
     {
         //creo tabla de simboloss
-        node* idNode = newNode(0, 0, 0, 0, "", NULL);
-        symbolTable* st2 = newTableOfSymbols(idNode);
+        symbolTable* st2 = malloc(sizeof(symbolTable));
         stStack* newStackLevel = newStack(st2);
         newStackLevel->next = stackOfLevels;
         stackOfLevels = newStackLevel;
@@ -256,9 +252,7 @@ void createLevels(tree* tree) {
     else {
         createLevels(tree->left);
         createLevels(tree->right);
-
     }
-
 }
 
 
@@ -285,4 +279,31 @@ void createSubTableSymbol(tree* tree, symbolTable* tope) {
     }
     createSubTableSymbol(tree->left, tope);
     createSubTableSymbol(tree->right, tope);
+}
+
+enum TType checkTypes(tree* tree){
+    if (tree == NULL) return None; 
+    if (tree->atr->label == VDECL || tree->atr->label == CONST)
+        return tree->atr->type;
+    if (tree->atr->label == SUMA && tree->atr->label == MULTIPLICACION && tree->atr->label == RESTA && tree->atr->label == DIVISION && tree->atr->type == None){
+        tree->atr->type = checkTypes(tree->left);
+        if (tree->atr->type != checkTypes(tree->right)){
+            return None; 
+        } else {
+            return tree->atr->type;
+        }
+    }
+    return None;
+}
+
+// Demo de como verificaria la valides de el codigo
+void checkValidation(tree* tree){
+    if (tree == NULL) return; 
+    if (tree->atr->label==STMT || tree->atr->label==MDECL){
+        if (checkTypes(tree->left) != checkTypes(tree->right)){
+            printf("tipos incompatibles\n");
+        }
+    } 
+    checkValidation(tree->left);
+    checkValidation(tree->right);
 }

@@ -5,7 +5,7 @@ echo
 for archivoActual in $(ls test/success);do
 	echo "------------------------------------------------------------------------------------"
 	echo "Running "$archivoActual" ..."
-             ./a.out  < "./test/success/"$archivoActual
+             ./ctds21  < "./test/success/"$archivoActual
 	echo
 done  
 echo "------------------------------------------------------------------------------------"
@@ -15,6 +15,6 @@ echo
 for archivoActual in $(ls test/fail);do
 	echo "------------------------------------------------------------------------------------"
 	echo "Running "$archivoActual" ..."
-             ./a.out  < "./test/fail/"$archivoActual
+             ./ctds21  < "./test/fail/"$archivoActual
 	echo
 done
