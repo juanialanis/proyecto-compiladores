@@ -128,10 +128,10 @@ symbolTable* newTableOfSymbols(node* s){
     return newTable;
 }
 
-void addLast(symbolTable* new, symbolTable* head) {
+symbolTable* addLast(symbolTable* new, symbolTable* head) {
     if (searchSimbol(new->cSymbol->text, head)== 1)
     {
-        printf("The variable %s is already declared at line %d \n", new->cSymbol->text, new->cSymbol->line);
+        printf("Error at line %d . The variable %s is already declared \n", new->cSymbol->line, new->cSymbol->text);
         exit(-1);
     }
 
@@ -139,23 +139,19 @@ void addLast(symbolTable* new, symbolTable* head) {
     if (st == NULL)
     {
         head = new;
-        printf("    csybol:  ");
-        treetoString(new->cSymbol);
-        printf("    head:  ");
-        treetoString(head->cSymbol);
-        return;
+        return head;
     }
     while (st->next != NULL) {
         st = st->next;
     }
     st->next = new;
-    return;
+    return head;
 }
 
 int searchSimbol(char* id, symbolTable* st) {
 
     while (st != NULL) {
-        printf("text: %s id: %s",st->cSymbol->text, id);
+    
         if (!strcmp(st->cSymbol->text,id))
             return 1;
         st = st->next;
@@ -179,7 +175,8 @@ stStack* addLevel(symbolTable* s){
 
 
 void createLevelOfSymbolTable(tree* tree) {
-    symbolTable* st = NULL;
+    node* idNode = newNode(0, 0, 0, 0, "", NULL);
+    symbolTable* st = newTableOfSymbols(idNode);
     createLevelZero(tree,st);
     stackOfLevels = newStack(st);
     
@@ -187,6 +184,7 @@ void createLevelOfSymbolTable(tree* tree) {
 }
 
 void createLevelZero(tree* tree, symbolTable* tope) {
+
     if(tree==NULL)
         return;
     if(tree->atr->label == MDECL)
@@ -194,16 +192,13 @@ void createLevelZero(tree* tree, symbolTable* tope) {
         if (tree->left->atr->label == MDECLTYPE)
         {
             symbolTable* st = newTableOfSymbols(tree->left->left->atr);
-            printf("st:  ");
             treetoString(st->cSymbol);
-            addLast(st, tope);
-            printf("despues del add:  ");
-            treetoString(tope->cSymbol);
+            tope = addLast(st, tope);
         }
         else {
             treetoString(tree->left->atr);
             symbolTable* st = newTableOfSymbols(tree->left->atr);
-            addLast(st, tope);
+            tope = addLast(st, tope);
         }
     }
     else if(tree->atr->label == VDECL) {
@@ -211,9 +206,12 @@ void createLevelZero(tree* tree, symbolTable* tope) {
         ids* ids = tree->left->atr->idList;
         while (ids != NULL) {
             idNode = newNode(tree->left->atr->value, tree->left->atr->line, tree->left->atr->type, tree->left->atr->label, ids->idName, NULL);
-            treetoString(idNode);
+            //treetoString(idNode);
             symbolTable* st = newTableOfSymbols(idNode);
-            addLast(st, tope);
+            //treetoString(st->cSymbol);
+        
+            tope = addLast(st, tope);
+        
             ids = ids->next;
         }
     }
@@ -221,6 +219,7 @@ void createLevelZero(tree* tree, symbolTable* tope) {
     {
         return;
     }
+
     createLevelZero(tree->left, tope);
     createLevelZero(tree->right, tope);
 }
@@ -230,7 +229,8 @@ void createLevels(tree* tree) {
         return;
     if (tree->atr->label == MDECL && tree->left->atr->label == MDECLTYPE && tree->right->atr->label == BLOCKDECL)
     {
-        symbolTable* st2 = NULL;
+        node* idNode = newNode(0, 0, 0, 0, "", NULL);
+        symbolTable* st2 = newTableOfSymbols(idNode);
         stStack* newStackLevel = newStack(st2);
         newStackLevel->next = stackOfLevels;
         stackOfLevels = newStackLevel;
@@ -243,7 +243,8 @@ void createLevels(tree* tree) {
     else if (tree->atr->label == BLOCKDECL)
     {
         //creo tabla de simboloss
-        symbolTable* st2 = NULL;
+        node* idNode = newNode(0, 0, 0, 0, "", NULL);
+        symbolTable* st2 = newTableOfSymbols(idNode);
         stStack* newStackLevel = newStack(st2);
         newStackLevel->next = stackOfLevels;
         stackOfLevels = newStackLevel;

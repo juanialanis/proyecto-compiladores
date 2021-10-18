@@ -76,7 +76,7 @@ symbolTable* newTableOfSymbols(node* s);
 
 void createLevelZero(tree* tree, symbolTable* tope);
 
-void addLast(symbolTable* new, symbolTable* head);
+symbolTable* addLast(symbolTable* new, symbolTable* head);
 
 stStack* newStack(symbolTable* s);
 

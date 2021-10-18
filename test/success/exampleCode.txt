@@ -1,7 +1,6 @@
 Program
 {
 integer x;
-integer x;
 integer inc(integer x)
 {
 return x + 1;
@@ -11,6 +10,7 @@ void main()  extern ;
 void print_int(integer i)
 {
 integer y, bv, z, asdasdasd;
+integer y;
 y = get_int();
 if (y == 1) then
 {
