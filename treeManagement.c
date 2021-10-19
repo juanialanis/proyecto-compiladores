@@ -116,7 +116,11 @@ void printTree(tree* tree, int space) {
     printTree(tree->right, space);
     for (int i = COUNT; i < space; i++)
         printf(" ");
-    treetoString(tree->atr);
+    if (tree->st != NULL && tree->st->cSymbol != NULL){
+        treetoString(tree->st->cSymbol);
+    } else {
+        treetoString(tree->atr);
+    }
     printTree(tree->left, space);
 } 
 
@@ -190,12 +194,14 @@ void createLevelZero(tree* tree, symbolTable* tope) {
         if (tree->left->atr->label == MDECLTYPE)
         {
             symbolTable* st = newTableOfSymbols(tree->left->left->atr);
+            tree->left->left->st = st;
             treetoString(st->cSymbol);
             tope = addLast(st, tope);
         }
         else {
             treetoString(tree->left->atr);
             symbolTable* st = newTableOfSymbols(tree->left->atr);
+            tree->left->st = st;
             tope = addLast(st, tope);
         }
     }
@@ -206,6 +212,7 @@ void createLevelZero(tree* tree, symbolTable* tope) {
             idNode = newNode(tree->left->atr->value, tree->left->atr->line, tree->left->atr->type, tree->left->atr->label, ids->idName, NULL);
             //treetoString(idNode);
             symbolTable* st = newTableOfSymbols(idNode);
+            tree->st = st;
             //treetoString(st->cSymbol);
         
             tope = addLast(st, tope);
@@ -232,6 +239,7 @@ void createLevels(tree* tree) {
         newStackLevel->next = stackOfLevels;
         stackOfLevels = newStackLevel;
         createSubTableSymbol(tree->left->right, st2);
+        tree->left->right->st = st2;
         createLevels(tree->right);
         //free(stackOfLevels);
         stackOfLevels = newStackLevel->next;
@@ -248,13 +256,38 @@ void createLevels(tree* tree) {
         createLevels(tree->right);
         //free(stackOfLevels);
         stackOfLevels = newStackLevel->next;
+    } 
+    else if (tree->atr->label == VAR)
+    {
+        symbolTable* result = findVariable(tree->atr->text);
+        if (result != NULL) {
+            printf("entro alguna vez \n");
+            tree->st = result;
+        }
     }
     else {
         createLevels(tree->left);
         createLevels(tree->right);
     }
 }
-
+symbolTable* findVariable(char* id){
+    stStack* head = stackOfLevels;
+    symbolTable* level;
+    while(head != NULL){
+        level = head->tope;
+        while(level != NULL && level->cSymbol != NULL){
+            if (strcmp(level->cSymbol->text, id) == 0)
+                return level;
+            level = level->next;
+        }
+        head = head->next;
+    }
+    if(head == NULL && level == NULL){
+        printf("Variable %s no declarada", id);
+        exit(-1);
+    }
+    return NULL;
+}
 
 void createSubTableSymbol(tree* tree, symbolTable* tope) {
     if(tree==NULL)
@@ -267,6 +300,7 @@ void createSubTableSymbol(tree* tree, symbolTable* tope) {
             printf("    ");
             treetoString(idNode);
             symbolTable* st = newTableOfSymbols(idNode);
+            tree->left->st = st;
             addLast(st, tope);
             ids = ids->next;
         }
@@ -275,6 +309,7 @@ void createSubTableSymbol(tree* tree, symbolTable* tope) {
         printf("  ");
         treetoString(tree->atr);
         symbolTable* st = newTableOfSymbols(tree->atr);
+        tree->st = st;
         addLast(st, tope);
     }
     createSubTableSymbol(tree->left, tope);

@@ -17,19 +17,19 @@ typedef struct infoNode {
     ids* idList;
 } node;
 
-//struct that defines a tree
-typedef struct treeN {
-    node* atr;
-    struct treeN* left;
-    struct treeN* right;
-} tree;
-
 //struct that defines a symbols table
 typedef struct symbolTable{
     node* cSymbol;
     struct symbolTable* next;
 } symbolTable;
 
+//struct that defines a tree
+typedef struct treeN {
+    node* atr;
+    symbolTable* st;
+    struct treeN* left;
+    struct treeN* right;
+} tree;
 
 typedef struct stStack {
     struct symbolTable* tope;
@@ -91,3 +91,5 @@ int searchSimbol(char* id, symbolTable* st);
 enum TType checkTypes(tree* tree);
 
 void checkValidation(tree* tree);
+
+symbolTable* findVariable(char* id);
