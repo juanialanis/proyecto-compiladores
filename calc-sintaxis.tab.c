@@ -1507,7 +1507,7 @@ yyreduce:
                                                 (yyval.tn) = newTree(root, (yyvsp[(3) - (5)].tn), (yyvsp[(4) - (5)].tn)); 
                                                 printTree((yyval.tn),0);
                                                 createLevelOfSymbolTable((yyval.tn));
-                                                //checkValidation($$);
+                                                checkValidation((yyval.tn));
                                         ;}
     break;
 
@@ -1518,7 +1518,7 @@ yyreduce:
                                                 (yyval.tn) = newTree(root, (yyvsp[(3) - (4)].tn), NULL); 
                                                 createLevelOfSymbolTable((yyval.tn));
                                                 printTree((yyval.tn),0);
-                                                //checkValidation($$);
+                                                checkValidation((yyval.tn));
                                         ;}
     break;
 
@@ -1527,10 +1527,10 @@ yyreduce:
     { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 (yyval.tn) = newTree(root, NULL, (yyvsp[(3) - (4)].tn)); 
-                                                printf("estoy aca 3 ");
+                                                // printf("estoy aca 3 ");
                                                 createLevelOfSymbolTable((yyval.tn));
                                                 printTree((yyval.tn),0);
-                                                //checkValidation($$);
+                                                checkValidation((yyval.tn));
                                         ;}
     break;
 
@@ -1539,10 +1539,10 @@ yyreduce:
     { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 (yyval.tn) = newTree(root, NULL, NULL); 
-                                                printf("estoy aca 4");
+                                                // printf("estoy aca 4");
                                                 createLevelOfSymbolTable((yyval.tn));
                                                 printTree((yyval.tn),0);
-                                                //checkValidation($$);
+                                                checkValidation((yyval.tn));
                                         ;}
     break;
 

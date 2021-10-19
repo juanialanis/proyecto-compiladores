@@ -38,30 +38,30 @@ prog: PROGRAM '{' variables methods '}'  {
                                                 $$ = newTree(root, $3, $4); 
                                                 printTree($$,0);
                                                 createLevelOfSymbolTable($$);
-                                                //checkValidation($$);
+                                                checkValidation($$);
                                         };
        | PROGRAM '{' methods '}'          { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 $$ = newTree(root, $3, NULL); 
                                                 createLevelOfSymbolTable($$);
                                                 printTree($$,0);
-                                                //checkValidation($$);
+                                                checkValidation($$);
                                         };      
        | PROGRAM '{' variables '}'      { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 $$ = newTree(root, NULL, $3); 
-                                                printf("estoy aca 3 ");
+                                                // printf("estoy aca 3 ");
                                                 createLevelOfSymbolTable($$);
                                                 printTree($$,0);
-                                                //checkValidation($$);
+                                                checkValidation($$);
                                         };
        | PROGRAM '{' '}'                { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 $$ = newTree(root, NULL, NULL); 
-                                                printf("estoy aca 4");
+                                                // printf("estoy aca 4");
                                                 createLevelOfSymbolTable($$);
                                                 printTree($$,0);
-                                                //checkValidation($$);
+                                                checkValidation($$);
                                         };
 ;  
 

@@ -178,7 +178,8 @@ stStack* addLevel(symbolTable* s){
 
 
 void createLevelOfSymbolTable(tree* tree) {
-    symbolTable* st = malloc(sizeof(symbolTable));
+    node* idNode = newNode(0, 0, 0, 0, "", NULL);
+    symbolTable* st = newTableOfSymbols(idNode);
     createLevelZero(tree,st);
     stackOfLevels = newStack(st);
     
@@ -234,7 +235,8 @@ void createLevels(tree* tree) {
         return;
     if (tree->atr->label == MDECL && tree->left->atr->label == MDECLTYPE && tree->right->atr->label == BLOCKDECL)
     {
-        symbolTable* st2 = malloc(sizeof(symbolTable));
+        node* idNode = newNode(0, 0, 0, 0, "", NULL);
+        symbolTable* st2 = newTableOfSymbols(idNode);
         stStack* newStackLevel = newStack(st2);
         newStackLevel->next = stackOfLevels;
         stackOfLevels = newStackLevel;
@@ -248,7 +250,8 @@ void createLevels(tree* tree) {
     else if (tree->atr->label == BLOCKDECL)
     {
         //creo tabla de simboloss
-        symbolTable* st2 = malloc(sizeof(symbolTable));
+        node* idNode = newNode(0, 0, 0, 0, "", NULL);
+        symbolTable* st2 = newTableOfSymbols(idNode);
         stStack* newStackLevel = newStack(st2);
         newStackLevel->next = stackOfLevels;
         stackOfLevels = newStackLevel;
@@ -261,9 +264,10 @@ void createLevels(tree* tree) {
     {
         symbolTable* result = findVariable(tree->atr->text);
         if (result != NULL) {
-            printf("entro alguna vez \n");
             tree->st = result;
         }
+        createLevels(tree->left);
+        createLevels(tree->right);
     }
     else {
         createLevels(tree->left);
@@ -273,7 +277,9 @@ void createLevels(tree* tree) {
 symbolTable* findVariable(char* id){
     stStack* head = stackOfLevels;
     symbolTable* level;
+    int nivel = 0;
     while(head != NULL){
+        nivel++;
         level = head->tope;
         while(level != NULL && level->cSymbol != NULL){
             if (strcmp(level->cSymbol->text, id) == 0)
@@ -318,7 +324,9 @@ void createSubTableSymbol(tree* tree, symbolTable* tope) {
 
 enum TType checkTypes(tree* tree){
     if (tree == NULL) return None; 
-    if (tree->atr->label == VAR || tree->atr->label == CONST)
+    if (tree->atr->label == VAR)
+        return tree->st->cSymbol->type;
+    if (tree->atr->label == CONST)
         return tree->atr->type;
     if (tree->atr->label == SUMA || tree->atr->label == MULTIPLICACION || tree->atr->label == RESTA || tree->atr->label == DIVISION){
         tree->atr->type = checkTypes(tree->left);
@@ -339,7 +347,7 @@ void checkValidation(tree* tree){
     if (tree == NULL) return; 
     if (tree->atr->label==STMT || tree->atr->label==MDECL || tree->atr->label==LEQUAL){
         if (checkTypes(tree->left) != checkTypes(tree->right)){
-            printf("tipos incompatibles\n");
+            printf("Incompatible types\n");
         }
     } 
     checkValidation(tree->left);
