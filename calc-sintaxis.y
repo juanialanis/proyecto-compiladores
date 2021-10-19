@@ -36,31 +36,29 @@ int yyerror(char *);
 prog: PROGRAM '{' variables methods '}'  { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 $$ = newTree(root, $3, $4); 
-                                                printTree($$,0);
+                                                //printTree($$,0);
                                                 createLevelOfSymbolTable($$);
                                                 checkValidation($$);
                                         };
        | PROGRAM '{' methods '}'          { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 $$ = newTree(root, $3, NULL); 
+                                                //printTree($$,0);
                                                 createLevelOfSymbolTable($$);
-                                                printTree($$,0);
                                                 checkValidation($$);
                                         };      
        | PROGRAM '{' variables '}'      { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 $$ = newTree(root, NULL, $3); 
-                                                // printf("estoy aca 3 ");
+                                                //printTree($$,0);
                                                 createLevelOfSymbolTable($$);
-                                                printTree($$,0);
                                                 checkValidation($$);
                                         };
        | PROGRAM '{' '}'                { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 $$ = newTree(root, NULL, NULL); 
-                                                // printf("estoy aca 4");
+                                                //printTree($$,0);
                                                 createLevelOfSymbolTable($$);
-                                                printTree($$,0);
                                                 checkValidation($$);
                                         };
 ;  

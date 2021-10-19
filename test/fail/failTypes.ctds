@@ -1,0 +1,42 @@
+Program {
+
+   integer print_int(integer i) extern;
+   
+   integer potencia (integer x, integer n) {
+        integer i,r;
+        i = 1;
+        r = x;
+        while (i<n){
+          r = r*x;
+          i = i+1;
+        }
+        return r;
+      }
+
+    integer factorial (integer v){
+      	integer limit,c,fact;
+      	limit = 15;
+      	if ( v - limit) then{ 
+          	return (-1);
+        }
+      	else { 
+          	c = 0;
+          	fact = 1;
+          	while (c<v)
+            	{
+              	c = c+1;
+              	fact = fact*c;
+            	}
+          	return fact;
+        }
+    }
+
+    integer main(){
+      integer x,y,z;
+      x = 2;
+      y = 3;
+      z = potencia(x,factorial(y));  //potencia(2,6) = 64
+        print_int(z);
+     	return z;
+     }
+}

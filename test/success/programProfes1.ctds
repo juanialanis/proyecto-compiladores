@@ -97,7 +97,7 @@ Program {
         result = i;
         while ( i < (a+b)) 
           {
-            if (((a % i) == 0) &&  ((b%i) ==0 )) then
+            if (((a % i) == 0) &&  ((b%i) == 0 )) then
               {
                 result = i;
               }

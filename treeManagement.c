@@ -8,7 +8,7 @@ char* TLabelString[] = { "VAR", "VDECL", "NONE", "NONEBLOCK", "BLOCKDECL", "IFTH
 
 char* TTypeString[] = {"None", "Int", "Bool", "Void" };
 
-//table of symbols
+// table of symbols
 stStack* stackOfLevels;
 
 
@@ -19,7 +19,7 @@ ids* newIdList(char* id, ids *next){
     return newIds;
 }
 
-//method that create a new tree
+// method that create a new tree
 tree* newTree(node* newatr, tree *newleft, tree *newright){
     tree *newTree = (tree*) malloc(sizeof(tree));
     newTree->atr = newatr;
@@ -40,9 +40,9 @@ node* newNode(int value,int line, enum TType type, enum TLabel label, char* text
     return newNode;
 }
 
-//as the concatenation gave us a lot of problems, we finally decided to use this option that we found in
-//https://es.stackoverflow.com/questions/146607/c%C3%B3mo-concatenar-cadenas-de-car%C3%A1cteres-sin-usar-la-funci%C3%B3n-strcat
-// and later has modified by our needs
+//  as the concatenation gave us a lot of problems, we finally decided to use this option that we found in
+//  https://es.stackoverflow.com/questions/146607/c%C3%B3mo-concatenar-cadenas-de-car%C3%A1cteres-sin-usar-la-funci%C3%B3n-strcat
+//  and later has modified by our needs
 char* cat(char *s1, char *s2) {
   if (!s1 || !s2)
     return s1? s1: s2;
@@ -60,14 +60,14 @@ char* cat(char *s1, char *s2) {
   return result; 
 }
 
-//method that take an int value and parse it to char*
+// method that take an int value and parse it to char*
 char* getValue(int i) {
     char* result = malloc(1);
     result[0] = '0'+i;
     return result;
 }
 
-//method that take an node* of an tree and parse it to a char* with all the fields of the tree
+// method that take an node* of an tree and parse it to a char* with all the fields of the tree
 char* treetoString(node* atr){
     char* value = cat("Value: ", getValue(atr->value));
     char* type = TTypeString[atr->type];
@@ -89,25 +89,10 @@ char* treetoString(node* atr){
         result = cat(result, ", ");
         listIds = listIds->next;
     }
-    printf("%s\n", result);
+    // printf("%s\n", result);
     return result;
 }
 
-
-/*
-//method that generates a sample of the tree
-void printTree(tree* tree){
-    if(tree==NULL)
-        return;
-    space += COUNT;
-
-    printInOrderTree(tree->right, space);
-    for (int i = COUNT; i < space; i++)
-        printf(" ");
-    treetoString(tree->atr);
-    printInOrderTree(tree->left, space);
-}
-*/
 void printTree(tree* tree, int space) {
     if(tree==NULL)
         return;
@@ -124,7 +109,7 @@ void printTree(tree* tree, int space) {
     printTree(tree->left, space);
 } 
 
-//method that creates a new table of symbols
+// method that creates a new table of symbols
 symbolTable* newTableOfSymbols(node* s){
     symbolTable* newTable = malloc(sizeof(symbolTable));
     newTable->cSymbol = s;
@@ -138,7 +123,6 @@ symbolTable* addLast(symbolTable* new, symbolTable* head) {
         printf("Error at line %d . The variable %s is already declared \n", new->cSymbol->line, new->cSymbol->text);
         exit(-1);
     }
-
     symbolTable* st = head;
     if (st == NULL)
     {
@@ -153,7 +137,6 @@ symbolTable* addLast(symbolTable* new, symbolTable* head) {
 }
 
 int searchSimbol(char* id, symbolTable* st) {
-
     while (st != NULL && st->cSymbol != NULL) {
         if (!strcmp(st->cSymbol->text,id))
             return 1;
@@ -162,14 +145,14 @@ int searchSimbol(char* id, symbolTable* st) {
     return 0;
 }
 
-stStack* newStack(symbolTable* s){
+stStack* newStack(symbolTable* s) {
     stStack* newStack = malloc(sizeof(stStack));
     newStack->tope = s;
     newStack->next = NULL;
     return newStack;
 }
 
-stStack* addLevel(symbolTable* s){
+stStack* addLevel(symbolTable* s) {
     stStack* newStack = malloc(sizeof(stStack));
     newStack->tope = s;
     newStack->next = NULL;
@@ -187,37 +170,22 @@ void createLevelOfSymbolTable(tree* tree) {
 }
 
 void createLevelZero(tree* tree, symbolTable* tope) {
-
     if(tree==NULL)
         return;
     if(tree->atr->label == MDECL)
     {
-        if (tree->left->atr->label == MDECLTYPE)
-        {
-            symbolTable* st = newTableOfSymbols(tree->left->left->atr);
-            tree->left->left->st = st;
-            treetoString(st->cSymbol);
-            tope = addLast(st, tope);
-        }
-        else {
-            treetoString(tree->left->atr);
-            symbolTable* st = newTableOfSymbols(tree->left->atr);
-            tree->left->st = st;
-            tope = addLast(st, tope);
-        }
+        symbolTable* st = newTableOfSymbols(tree->left->left->atr);
+        tree->left->left->st = st;
+        tope = addLast(st, tope);
     }
     else if(tree->atr->label == VDECL) {
         node* idNode;
         ids* ids = tree->left->atr->idList;
         while (ids != NULL) {
             idNode = newNode(tree->left->atr->value, tree->left->atr->line, tree->left->atr->type, tree->left->atr->label, ids->idName, NULL);
-            //treetoString(idNode);
             symbolTable* st = newTableOfSymbols(idNode);
             tree->st = st;
-            //treetoString(st->cSymbol);
-        
             tope = addLast(st, tope);
-        
             ids = ids->next;
         }
     }
@@ -240,10 +208,11 @@ void createLevels(tree* tree) {
         stStack* newStackLevel = newStack(st2);
         newStackLevel->next = stackOfLevels;
         stackOfLevels = newStackLevel;
-        createSubTableSymbol(tree->left->right, st2);
-        tree->left->right->st = st2;
+        if (tree->left->right != NULL){
+            createSubTableSymbol(tree->left->right, st2);
+            tree->left->right->st = st2;
+        }
         createLevels(tree->right);
-        //free(stackOfLevels);
         stackOfLevels = newStackLevel->next;
 
     }
@@ -257,7 +226,6 @@ void createLevels(tree* tree) {
         stackOfLevels = newStackLevel;
         createSubTableSymbol(tree->left, st2);
         createLevels(tree->right);
-        //free(stackOfLevels);
         stackOfLevels = newStackLevel->next;
     } 
     else if (tree->atr->label == VAR)
@@ -303,8 +271,6 @@ void createSubTableSymbol(tree* tree, symbolTable* tope) {
         ids* ids = tree->left->atr->idList;
         while (ids != NULL) {
             idNode = newNode(tree->left->atr->value, tree->left->atr->line, tree->left->atr->type, tree->left->atr->label, ids->idName, NULL);
-            printf("    ");
-            treetoString(idNode);
             symbolTable* st = newTableOfSymbols(idNode);
             tree->left->st = st;
             addLast(st, tope);
@@ -312,8 +278,6 @@ void createSubTableSymbol(tree* tree, symbolTable* tope) {
         }
     }
     else if (tree->atr->text != NULL) {
-        printf("  ");
-        treetoString(tree->atr);
         symbolTable* st = newTableOfSymbols(tree->atr);
         tree->st = st;
         addLast(st, tope);
@@ -322,13 +286,14 @@ void createSubTableSymbol(tree* tree, symbolTable* tope) {
     createSubTableSymbol(tree->right, tope);
 }
 
+// Type check
 enum TType checkTypes(tree* tree){
     if (tree == NULL) return None; 
     if (tree->atr->label == VAR)
         return tree->st->cSymbol->type;
     if (tree->atr->label == CONST)
         return tree->atr->type;
-    if (tree->atr->label == SUMA || tree->atr->label == MULTIPLICACION || tree->atr->label == RESTA || tree->atr->label == DIVISION){
+    if (tree->atr->label == SUMA || tree->atr->label == MULTIPLICACION || tree->atr->label == RESTA || tree->atr->label == DIVISION || tree->atr->label == LMOD){
         tree->atr->type = checkTypes(tree->left);
         if (tree->atr->type != Int || tree->atr->type != checkTypes(tree->right)){
             return None; 
@@ -336,20 +301,49 @@ enum TType checkTypes(tree* tree){
             return tree->atr->type;
         }
     }
-    if (tree->atr->label == IFTHEN){
-        checkValidation(tree->left);
+    if (tree->atr->label == LAND || tree->atr->label == LOR){
+        tree->atr->type = checkTypes(tree->left);
+        if (tree->atr->type != Bool || tree->atr->type != checkTypes(tree->right)){
+            return None; 
+        } else {
+            return tree->atr->type;
+        }
+    }
+    if (tree->atr->label==LEQUAL){
+        if (checkTypes(tree->left) == checkTypes(tree->right))
+            return Bool;
+    }
+    if (tree->atr->label == MENOR || tree->atr->label == MAYOR){
+        if (checkTypes(tree->left) == checkTypes(tree->right) == Int)
+            return Bool;
+    }
+    if (tree->atr->label == NOTEXP){
+        if (checkTypes(tree->right) == Bool)
+            return Bool;
     }
     return None;
 }
 
-// Demo de como verificaria la valides de el codigo
+// Type check
 void checkValidation(tree* tree){
     if (tree == NULL) return; 
-    if (tree->atr->label==STMT || tree->atr->label==MDECL || tree->atr->label==LEQUAL){
+    if (tree->atr->label==STMT || tree->atr->label==MDECL){
         if (checkTypes(tree->left) != checkTypes(tree->right)){
-            printf("Incompatible types\n");
+            printf("Incompatible types\n in line: %d \n", tree->left->atr->line);
         }
     } 
+    if (tree->atr->label==IFTHEN){
+        if (checkTypes(tree->left) != Bool)
+            printf("No boolean expresion into if statement in line: %d \n", tree->left->atr->line);
+    }
+    if (tree->atr->label == NOTEXP){
+        if (checkTypes(tree->right) != Bool)
+            printf("Incompatible types\n in line: %d \n", tree->right->atr->line);
+    }
+    if (tree->atr->label == NEGATIVEEXP){
+        if (checkTypes(tree->right) != Int)
+            printf("Incompatible types\n in line: %d \n", tree->right->atr->line);
+    }
     checkValidation(tree->left);
     checkValidation(tree->right);
 }

@@ -1,20 +1,23 @@
 Program
 {
-  integer inc(integer x) {
-    return x + 1;
-  }
-  integer get_int() extern;
-  void main()  extern ;
-  void print_int(integer i)
-  {
-    bool y, bv, z, asdasdasd;
-    integer x;
-    y = get_int();
-    if (y == 1) then
-    {
-      print_int(y);
-    } else {
-      return print_int(inc(y));
-    }
-  }
+integer inc(integer x)
+{
+return x + 1;
+}
+integer get_int() extern;
+void main()  extern ;
+void print_int(integer i)
+{
+integer y, bv, z, asdasdasd;
+integer x,w;
+y = get_int();
+if ((w%x) == 0) then
+{
+print_int(y);
+}
+else
+{
+return print_int(inc(y));
+}
+}
 }
