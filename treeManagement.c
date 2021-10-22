@@ -89,7 +89,7 @@ char* treetoString(node* atr){
         result = cat(result, ", ");
         listIds = listIds->next;
     }
-    // printf("%s\n", result);
+    printf("%s\n", result);
     return result;
 }
 
@@ -237,6 +237,14 @@ void createLevels(tree* tree) {
         createLevels(tree->left);
         createLevels(tree->right);
     }
+    else if (tree->atr->label == MCALL){
+        symbolTable* result = findVariable(tree->left->atr->text);
+        if (result != NULL) {
+            tree->st = result;
+        }
+        createLevels(tree->left);
+        createLevels(tree->right);
+    }
     else {
         createLevels(tree->left);
         createLevels(tree->right);
@@ -321,6 +329,9 @@ enum TType checkTypes(tree* tree){
         if (checkTypes(tree->right) == Bool)
             return Bool;
     }
+    if (tree->atr->label == MCALL){
+        return tree->st->cSymbol->type;
+    }
     return None;
 }
 
@@ -344,6 +355,36 @@ void checkValidation(tree* tree){
         if (checkTypes(tree->right) != Int)
             printf("Incompatible types\n in line: %d \n", tree->right->atr->line);
     }
+    if (tree->atr->label == STMTASSIGN){
+        if (checkTypes(tree->right) != checkTypes(tree->left)){
+            printf("Incompatible types for the assignament in line: %d \n", tree->atr->line);
+        }
+    }
+    if (tree->atr->label == MDECL ){
+        int result = 1;
+        findReturns(tree->right,tree->left->left->atr->type,&result);
+        if(result != 1 ) printf(" Incompatible types of returns with the type of the function %d \n", tree->atr->line);
+    }
     checkValidation(tree->left);
     checkValidation(tree->right);
+}
+
+void findReturns(tree* tree, enum TType type, int* result){
+    if(tree != NULL && tree->atr->label != MDECL){
+        if(tree->atr->label == EXT){
+            *result = 1;
+            return;
+        }
+        else if(tree->atr->label == RET){
+            if(tree->right == NULL){
+                *result = *result * (type == Void);
+            }
+            else{
+                *result = *result * (checkTypes(tree->right) == type);
+            }
+            
+        }
+        findReturns(tree->left,type,result);
+        findReturns(tree->right,type,result);
+    }
 }

@@ -36,21 +36,21 @@ int yyerror(char *);
 prog: PROGRAM '{' variables methods '}'  { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 $$ = newTree(root, $3, $4); 
-                                                //printTree($$,0);
+                                                // printTree($$,0);
                                                 createLevelOfSymbolTable($$);
                                                 checkValidation($$);
                                         };
        | PROGRAM '{' methods '}'          { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 $$ = newTree(root, $3, NULL); 
-                                                //printTree($$,0);
+                                                // printTree($$,0);
                                                 createLevelOfSymbolTable($$);
                                                 checkValidation($$);
                                         };      
        | PROGRAM '{' variables '}'      { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 $$ = newTree(root, NULL, $3); 
-                                                //printTree($$,0);
+                                                // printTree($$,0);
                                                 createLevelOfSymbolTable($$);
                                                 checkValidation($$);
                                         };
@@ -180,7 +180,7 @@ type: INTEGER   {
 
 statement: ID '=' expression ';'        {
                                                 node* root = newNode(0, yylineno, None, STMTASSIGN, NULL, NULL);
-                                                node* leftRoot = newNode(0, yylineno, None, NONE, $1, NULL);
+                                                node* leftRoot = newNode(0, yylineno, None, VAR, $1, NULL);
                                                 tree* leftTree = newTree(leftRoot, NULL, NULL);
                                                 $$ = newTree(root, leftTree, $3);   
                                         }

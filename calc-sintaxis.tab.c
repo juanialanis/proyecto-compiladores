@@ -1505,7 +1505,7 @@ yyreduce:
     { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 (yyval.tn) = newTree(root, (yyvsp[(3) - (5)].tn), (yyvsp[(4) - (5)].tn)); 
-                                                //printTree($$,0);
+                                                // printTree($$,0);
                                                 createLevelOfSymbolTable((yyval.tn));
                                                 checkValidation((yyval.tn));
                                         ;}
@@ -1516,7 +1516,7 @@ yyreduce:
     { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 (yyval.tn) = newTree(root, (yyvsp[(3) - (4)].tn), NULL); 
-                                                //printTree($$,0);
+                                                // printTree($$,0);
                                                 createLevelOfSymbolTable((yyval.tn));
                                                 checkValidation((yyval.tn));
                                         ;}
@@ -1527,7 +1527,7 @@ yyreduce:
     { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
                                                 (yyval.tn) = newTree(root, NULL, (yyvsp[(3) - (4)].tn)); 
-                                                //printTree($$,0);
+                                                // printTree($$,0);
                                                 createLevelOfSymbolTable((yyval.tn));
                                                 checkValidation((yyval.tn));
                                         ;}
@@ -1733,7 +1733,7 @@ yyreduce:
 #line 181 "calc-sintaxis.y"
     {
                                                 node* root = newNode(0, yylineno, None, STMTASSIGN, NULL, NULL);
-                                                node* leftRoot = newNode(0, yylineno, None, NONE, (yyvsp[(1) - (4)].s), NULL);
+                                                node* leftRoot = newNode(0, yylineno, None, VAR, (yyvsp[(1) - (4)].s), NULL);
                                                 tree* leftTree = newTree(leftRoot, NULL, NULL);
                                                 (yyval.tn) = newTree(root, leftTree, (yyvsp[(3) - (4)].tn));   
                                         ;}

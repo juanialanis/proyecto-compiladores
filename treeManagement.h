@@ -93,3 +93,5 @@ enum TType checkTypes(tree* tree);
 void checkValidation(tree* tree);
 
 symbolTable* findVariable(char* id);
+
+void findReturns(tree* tree, enum TType type, int* result);
