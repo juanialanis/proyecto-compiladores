@@ -1503,7 +1503,7 @@ yyreduce:
         case 2:
 #line 36 "calc-sintaxis.y"
     { 
-                                                node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL);
                                                 (yyval.tn) = newTree(root, (yyvsp[(3) - (5)].tn), (yyvsp[(4) - (5)].tn)); 
                                                 // printTree($$,0);
                                                 createLevelOfSymbolTable((yyval.tn));
@@ -1514,7 +1514,7 @@ yyreduce:
   case 3:
 #line 43 "calc-sintaxis.y"
     { 
-                                                node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL);
                                                 (yyval.tn) = newTree(root, (yyvsp[(3) - (4)].tn), NULL); 
                                                 // printTree($$,0);
                                                 createLevelOfSymbolTable((yyval.tn));
@@ -1525,7 +1525,7 @@ yyreduce:
   case 4:
 #line 50 "calc-sintaxis.y"
     { 
-                                                node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL);
                                                 (yyval.tn) = newTree(root, NULL, (yyvsp[(3) - (4)].tn)); 
                                                 // printTree($$,0);
                                                 createLevelOfSymbolTable((yyval.tn));
@@ -1536,7 +1536,7 @@ yyreduce:
   case 5:
 #line 57 "calc-sintaxis.y"
     { 
-                                                node* root = newNode(0, yylineno, None, PROG, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL);
                                                 (yyval.tn) = newTree(root, NULL, NULL); 
                                                 //printTree($$,0);
                                                 createLevelOfSymbolTable((yyval.tn));
@@ -1547,7 +1547,7 @@ yyreduce:
   case 6:
 #line 66 "calc-sintaxis.y"
     {
-                                                node* root = newNode(0, yylineno, None, SEMICOLON, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, SEMICOLON, NULL, NULL, NULL);
                                                 (yyval.tn) = newTree(root, (yyvsp[(1) - (2)].tn), (yyvsp[(2) - (2)].tn)); 
                                         ;}
     break;
@@ -1562,8 +1562,8 @@ yyreduce:
   case 8:
 #line 75 "calc-sintaxis.y"
     {
-                                        node* root = newNode(0, yylineno, None, VDECL, NULL, NULL);
-                                        node* sonL = newNode(0, yylineno, (yyvsp[(1) - (3)].i), NONE, NULL, (yyvsp[(2) - (3)].idL));
+                                        node* root = newNode(0, yylineno, None, VDECL, NULL, NULL, NULL);
+                                        node* sonL = newNode(0, yylineno, (yyvsp[(1) - (3)].i), NONE, NULL, (yyvsp[(2) - (3)].idL),NULL);
                                         tree* newTL = newTree(sonL, NULL, NULL);
                                         (yyval.tn) = newTree(root, newTL, NULL);
                                 ;}
@@ -1586,7 +1586,7 @@ yyreduce:
   case 11:
 #line 91 "calc-sintaxis.y"
     {
-                                        node* root = newNode(0, yylineno, None, SEMICOLON, NULL, NULL);
+                                        node* root = newNode(0, yylineno, None, SEMICOLON, NULL, NULL, NULL);
                                         (yyval.tn) = newTree(root, (yyvsp[(1) - (2)].tn), (yyvsp[(2) - (2)].tn)); 
                                 ;}
     break;
@@ -1601,8 +1601,8 @@ yyreduce:
   case 13:
 #line 100 "calc-sintaxis.y"
     {
-                                                                        node* root = newNode(0, yylineno, None, MDECL, NULL, NULL);
-                                                                        node* left = newNode(0, yylineno, None, MDECLTYPE, NULL, NULL);
+                                                                        node* root = newNode(0, yylineno, None, MDECL, NULL, NULL, NULL);
+                                                                        node* left = newNode(0, yylineno, None, MDECLTYPE, NULL, NULL, NULL);
                                                                         tree* leftTree = newTree(left, (yyvsp[(1) - (5)].tn), (yyvsp[(3) - (5)].tn));
                                                                         (yyval.tn) = newTree(root, leftTree, (yyvsp[(5) - (5)].tn));
                                                                 ;}
@@ -1611,8 +1611,8 @@ yyreduce:
   case 14:
 #line 106 "calc-sintaxis.y"
     {
-                                                                        node* root = newNode(0, yylineno, None, MDECL, NULL, NULL);
-                                                                        node* left = newNode(0, yylineno, None, MDECLTYPE, NULL, NULL);
+                                                                        node* root = newNode(0, yylineno, None, MDECL, NULL, NULL, NULL);
+                                                                        node* left = newNode(0, yylineno, None, MDECLTYPE, NULL, NULL, NULL);
                                                                         tree* leftTree = newTree(left, (yyvsp[(1) - (4)].tn), NULL);
                                                                         (yyval.tn) = newTree(root, leftTree, (yyvsp[(4) - (4)].tn));
                                                                 ;}
@@ -1621,7 +1621,7 @@ yyreduce:
   case 15:
 #line 114 "calc-sintaxis.y"
     {
-                                node* root = newNode(0, yylineno, (yyvsp[(1) - (2)].i), NONE, (yyvsp[(2) - (2)].s),NULL);
+                                node* root = newNode(0, yylineno, (yyvsp[(1) - (2)].i), NONE, (yyvsp[(2) - (2)].s),NULL,NULL);
                                 (yyval.tn) = newTree(root, NULL, NULL);
                         ;}
     break;
@@ -1629,7 +1629,7 @@ yyreduce:
   case 16:
 #line 118 "calc-sintaxis.y"
     {
-                                node* root = newNode(0, yylineno, Void, NONE, (yyvsp[(2) - (2)].s),NULL);
+                                node* root = newNode(0, yylineno, Void, NONE, (yyvsp[(2) - (2)].s),NULL,NULL);
                                 treetoString(root);
                                 (yyval.tn) = newTree(root, NULL, NULL);
                         ;}
@@ -1645,7 +1645,7 @@ yyreduce:
   case 18:
 #line 128 "calc-sintaxis.y"
     {
-                                        node* root = newNode(0, yylineno, None, EXT, NULL, NULL);
+                                        node* root = newNode(0, yylineno, None, EXT, NULL, NULL, NULL);
                                         (yyval.tn) = newTree(root,NULL,NULL);
                                 ;}
     break;
@@ -1653,9 +1653,9 @@ yyreduce:
   case 19:
 #line 134 "calc-sintaxis.y"
     {    
-                                    node* left = newNode(0, yylineno, (yyvsp[(1) - (4)].i), NONE, (yyvsp[(2) - (4)].s), NULL);
+                                    node* left = newNode(0, yylineno, (yyvsp[(1) - (4)].i), PARAM, (yyvsp[(2) - (4)].s), NULL,NULL);
                                     tree* leftTree = newTree(left, NULL, NULL);
-                                    node* root = newNode(0, yylineno, None, COMMA, NULL, NULL);
+                                    node* root = newNode(0, yylineno, None, COMMA, NULL, NULL, NULL);
                                     (yyval.tn) = newTree(root, leftTree, (yyvsp[(4) - (4)].tn));  
                                ;}
     break;
@@ -1663,7 +1663,7 @@ yyreduce:
   case 20:
 #line 140 "calc-sintaxis.y"
     {
-                                node* root = newNode(0, yylineno, (yyvsp[(1) - (2)].i), NONE, (yyvsp[(2) - (2)].s), NULL);
+                                node* root = newNode(0, yylineno, (yyvsp[(1) - (2)].i), PARAM, (yyvsp[(2) - (2)].s), NULL,NULL);
                                 (yyval.tn) = newTree(root,NULL,NULL);
                        ;}
     break;
@@ -1671,7 +1671,7 @@ yyreduce:
   case 21:
 #line 146 "calc-sintaxis.y"
     {
-                                                node* root = newNode(0, yylineno, None, BLOCKDECL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, BLOCKDECL, NULL, NULL, NULL);
                                                 (yyval.tn)= newTree(root,(yyvsp[(2) - (4)].tn),(yyvsp[(3) - (4)].tn));
                                         ;}
     break;
@@ -1679,7 +1679,7 @@ yyreduce:
   case 22:
 #line 150 "calc-sintaxis.y"
     {
-                                                node* root = newNode(0, yylineno, None, BLOCKDECL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, BLOCKDECL, NULL, NULL, NULL);
                                                 (yyval.tn)= newTree(root,NULL,(yyvsp[(2) - (3)].tn));
                                         ;}
     break;
@@ -1687,7 +1687,7 @@ yyreduce:
   case 23:
 #line 154 "calc-sintaxis.y"
     {
-                                                node* root = newNode(0, yylineno, None, BLOCKDECL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, BLOCKDECL, NULL, NULL, NULL);
                                                 (yyval.tn)= newTree(root,(yyvsp[(2) - (3)].tn),NULL);
                                         ;}
     break;
@@ -1695,7 +1695,7 @@ yyreduce:
   case 24:
 #line 158 "calc-sintaxis.y"
     {
-                                node* root = newNode(0, yylineno, None, NONEBLOCK, NULL, NULL);
+                                node* root = newNode(0, yylineno, None, NONEBLOCK, NULL, NULL, NULL);
                                 (yyval.tn) = newTree(root,NULL,NULL);   
                         ;}
     break;
@@ -1703,7 +1703,7 @@ yyreduce:
   case 25:
 #line 164 "calc-sintaxis.y"
     { 
-                                                node* root = newNode(0, yylineno, None, STMT, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, STMT, NULL, NULL, NULL);
                                                 (yyval.tn) = newTree(root, (yyvsp[(1) - (2)].tn), (yyvsp[(2) - (2)].tn));
                                         ;}
     break;
@@ -1732,8 +1732,8 @@ yyreduce:
   case 29:
 #line 181 "calc-sintaxis.y"
     {
-                                                node* root = newNode(0, yylineno, None, STMTASSIGN, NULL, NULL);
-                                                node* leftRoot = newNode(0, yylineno, None, VAR, (yyvsp[(1) - (4)].s), NULL);
+                                                node* root = newNode(0, yylineno, None, STMTASSIGN, NULL, NULL, NULL);
+                                                node* leftRoot = newNode(0, yylineno, None, VAR, (yyvsp[(1) - (4)].s), NULL, NULL);
                                                 tree* leftTree = newTree(leftRoot, NULL, NULL);
                                                 (yyval.tn) = newTree(root, leftTree, (yyvsp[(3) - (4)].tn));   
                                         ;}
@@ -1756,7 +1756,7 @@ yyreduce:
   case 32:
 #line 193 "calc-sintaxis.y"
     {
-                                                node* root = newNode(0, yylineno, None, STMTWHILE, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, STMTWHILE, NULL, NULL, NULL);
                                                 (yyval.tn) = newTree(root,(yyvsp[(2) - (3)].tn), (yyvsp[(3) - (3)].tn)); 
                                         ;}
     break;
@@ -1778,7 +1778,7 @@ yyreduce:
   case 35:
 #line 203 "calc-sintaxis.y"
     {
-                                                node* root = newNode(0, yylineno, None, SEMICOLON, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, SEMICOLON, NULL, NULL, NULL);
                                                 (yyval.tn) = newTree(root, NULL, NULL); 
                                         ;}
     break;
@@ -1786,7 +1786,7 @@ yyreduce:
   case 36:
 #line 209 "calc-sintaxis.y"
     {
-                                        node* root = newNode(0, yylineno, None, RET, NULL, NULL);
+                                        node* root = newNode(0, yylineno, None, RET, NULL, NULL, NULL);
                                         (yyval.tn) = newTree(root, NULL, (yyvsp[(2) - (3)].tn));    
                                 ;}
     break;
@@ -1794,7 +1794,7 @@ yyreduce:
   case 37:
 #line 213 "calc-sintaxis.y"
     {
-                                        node* root = newNode(0, yylineno, None, RET, NULL, NULL);
+                                        node* root = newNode(0, yylineno, None, RET, NULL, NULL, NULL);
                                         (yyval.tn) = newTree(root, NULL, NULL);    
                                 ;}
     break;
@@ -1802,7 +1802,7 @@ yyreduce:
   case 38:
 #line 219 "calc-sintaxis.y"
     {
-                                                                node* root = newNode(0, yylineno, None, IFTHEN, NULL, NULL);
+                                                                node* root = newNode(0, yylineno, None, IFTHEN, NULL, NULL, NULL);
                                                                 (yyval.tn) = newTree(root,(yyvsp[(3) - (6)].tn),(yyvsp[(6) - (6)].tn));
                                                         ;}
     break;
@@ -1810,8 +1810,8 @@ yyreduce:
   case 39:
 #line 223 "calc-sintaxis.y"
     {
-                                                                node* root = newNode(0, yylineno, None, IFTELSE, NULL, NULL);
-                                                                node* leftRoot = newNode(0, yylineno, None, IFTHEN, NULL, NULL);
+                                                                node* root = newNode(0, yylineno, None, IFTELSE, NULL, NULL, NULL);
+                                                                node* leftRoot = newNode(0, yylineno, None, IFTHEN, NULL, NULL, NULL);
                                                                 tree* leftTree = newTree(leftRoot, (yyvsp[(3) - (8)].tn), (yyvsp[(6) - (8)].tn));
                                                                 (yyval.tn) = newTree(root,leftTree,(yyvsp[(8) - (8)].tn));
                                                         ;}
@@ -1820,8 +1820,8 @@ yyreduce:
   case 40:
 #line 231 "calc-sintaxis.y"
     {
-                                                node* root = newNode(0, yylineno, None, MCALL, NULL, NULL);
-                                                node* leftRoot = newNode(0, yylineno, None, NONE, (yyvsp[(1) - (4)].s), NULL);
+                                                node* root = newNode(0, yylineno, None, MCALL, NULL, NULL, NULL);
+                                                node* leftRoot = newNode(0, yylineno, None, NONE, (yyvsp[(1) - (4)].s), NULL, NULL);
                                                 tree* leftTree = newTree(leftRoot, NULL, NULL);
                                                 (yyval.tn) = newTree(root,leftTree,(yyvsp[(3) - (4)].tn));
                                         ;}
@@ -1830,9 +1830,9 @@ yyreduce:
   case 41:
 #line 237 "calc-sintaxis.y"
     {
-                                                node* root = newNode(0, yylineno, None, MCALL, NULL, NULL);
-                                                node* leftRoot = newNode(0, yylineno, None, NONE, (yyvsp[(1) - (3)].s), NULL);
-                                                tree* leftTree = newTree(leftRoot, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, MCALL, NULL, NULL, NULL);
+                                                node* leftRoot = newNode(0, yylineno, None, NONE, (yyvsp[(1) - (3)].s), NULL,NULL);
+                                                tree* leftTree = newTree(leftRoot,NULL, NULL);
                                                 (yyval.tn) = newTree(root,leftTree, NULL);
                                         ;}
     break;
@@ -1840,7 +1840,7 @@ yyreduce:
   case 42:
 #line 245 "calc-sintaxis.y"
     {
-                                                        node* root = newNode(0, yylineno, None, COMMA, NULL, NULL);
+                                                        node* root = newNode(0, yylineno, None, COMMA, NULL, NULL, NULL);
                                                         (yyval.tn) = newTree(root,(yyvsp[(1) - (3)].tn),(yyvsp[(3) - (3)].tn));
                                                 ;}
     break;
@@ -1855,7 +1855,7 @@ yyreduce:
   case 44:
 #line 254 "calc-sintaxis.y"
     { 
-                                                        node* root = newNode(0, yylineno, None, VAR, (yyvsp[(1) - (1)].s), NULL);
+                                                        node* root = newNode(0, yylineno, None, VAR, (yyvsp[(1) - (1)].s), NULL, NULL);
                                                         (yyval.tn) = newTree(root,NULL,NULL);      
                                                 ;}
     break;
@@ -1884,7 +1884,7 @@ yyreduce:
   case 48:
 #line 267 "calc-sintaxis.y"
     {
-                                                        node* root = newNode(0, yylineno, None, NEGATIVEEXP, NULL,NULL);
+                                                        node* root = newNode(0, yylineno, None, NEGATIVEEXP, NULL,NULL,NULL);
                                                         (yyval.tn) = newTree(root, NULL, (yyvsp[(2) - (2)].tn));
                                                 ;}
     break;
@@ -1892,7 +1892,7 @@ yyreduce:
   case 49:
 #line 271 "calc-sintaxis.y"
     {
-                                                        node* root = newNode(0, yylineno, None, NOTEXP, NULL,NULL);
+                                                        node* root = newNode(0, yylineno, None, NOTEXP, NULL,NULL,NULL);
                                                         (yyval.tn) = newTree(root, NULL, (yyvsp[(2) - (2)].tn));
                                                 ;}
     break;
@@ -1907,7 +1907,7 @@ yyreduce:
   case 51:
 #line 280 "calc-sintaxis.y"
     { 
-                                                node* root = newNode(0, yylineno, None, SUMA, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, SUMA, NULL, NULL, NULL);
                                                 (yyval.tn) = newTree(root,(yyvsp[(1) - (3)].tn),(yyvsp[(3) - (3)].tn));      
                                         ;}
     break;
@@ -1915,7 +1915,7 @@ yyreduce:
   case 52:
 #line 284 "calc-sintaxis.y"
     { 
-                                                node* root = newNode(0, yylineno, None, RESTA, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, RESTA, NULL, NULL, NULL);
                                                 (yyval.tn) = newTree(root,(yyvsp[(1) - (3)].tn),(yyvsp[(3) - (3)].tn));      
                                         ;}
     break;
@@ -1923,7 +1923,7 @@ yyreduce:
   case 53:
 #line 288 "calc-sintaxis.y"
     { 
-                                                node* root = newNode(0, yylineno, None, MULTIPLICACION, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, MULTIPLICACION, NULL, NULL, NULL);
                                                 (yyval.tn) = newTree(root,(yyvsp[(1) - (3)].tn),(yyvsp[(3) - (3)].tn));      
                                         ;}
     break;
@@ -1931,7 +1931,7 @@ yyreduce:
   case 54:
 #line 292 "calc-sintaxis.y"
     { 
-                                                node* root = newNode(0, yylineno, None, DIVISION, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, DIVISION, NULL, NULL, NULL);
                                                 (yyval.tn) = newTree(root,(yyvsp[(1) - (3)].tn),(yyvsp[(3) - (3)].tn));      
                                         ;}
     break;
@@ -1939,7 +1939,7 @@ yyreduce:
   case 55:
 #line 296 "calc-sintaxis.y"
     { 
-                                                node* root = newNode(0, yylineno, None, LMOD, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, LMOD, NULL, NULL, NULL);
                                                 (yyval.tn) = newTree(root,(yyvsp[(1) - (3)].tn),(yyvsp[(3) - (3)].tn));      
                                         ;}
     break;
@@ -1947,7 +1947,7 @@ yyreduce:
   case 56:
 #line 300 "calc-sintaxis.y"
     { 
-                                                node* root = newNode(0, yylineno, None, MENOR, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, MENOR, NULL, NULL, NULL);
                                                 (yyval.tn) = newTree(root,(yyvsp[(1) - (3)].tn),(yyvsp[(3) - (3)].tn));      
                                         ;}
     break;
@@ -1955,7 +1955,7 @@ yyreduce:
   case 57:
 #line 304 "calc-sintaxis.y"
     { 
-                                                node* root = newNode(0, yylineno, None, MAYOR, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, MAYOR, NULL, NULL, NULL);
                                                 (yyval.tn) = newTree(root,(yyvsp[(1) - (3)].tn),(yyvsp[(3) - (3)].tn));      
                                         ;}
     break;
@@ -1963,7 +1963,7 @@ yyreduce:
   case 58:
 #line 308 "calc-sintaxis.y"
     { 
-                                                node* root = newNode(0, yylineno, None, LEQUAL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, LEQUAL, NULL, NULL, NULL);
                                                 (yyval.tn) = newTree(root,(yyvsp[(1) - (3)].tn),(yyvsp[(3) - (3)].tn));      
                                         ;}
     break;
@@ -1971,7 +1971,7 @@ yyreduce:
   case 59:
 #line 312 "calc-sintaxis.y"
     { 
-                                                node* root = newNode(0, yylineno, None, LAND, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, LAND, NULL, NULL, NULL);
                                                 (yyval.tn) = newTree(root,(yyvsp[(1) - (3)].tn),(yyvsp[(3) - (3)].tn));      
                                         ;}
     break;
@@ -1979,7 +1979,7 @@ yyreduce:
   case 60:
 #line 316 "calc-sintaxis.y"
     { 
-                                                node* root = newNode(0, yylineno, None, LOR, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, LOR, NULL, NULL, NULL);
                                                 (yyval.tn) = newTree(root,(yyvsp[(1) - (3)].tn),(yyvsp[(3) - (3)].tn));      
                                         ;}
     break;
@@ -1987,15 +1987,15 @@ yyreduce:
   case 61:
 #line 322 "calc-sintaxis.y"
     {
-                        node* root = newNode((yyvsp[(1) - (1)].i), 0, Int, CONST, NULL, NULL); 
-                        (yyval.tn) = newTree(root, NULL, NULL);
+                        node* root = newNode((yyvsp[(1) - (1)].i), 0, Int, CONST, NULL, NULL, NULL); 
+                        (yyval.tn) = newTree(root,NULL, NULL);
                 ;}
     break;
 
   case 62:
 #line 326 "calc-sintaxis.y"
     {
-                        node* root = newNode(1, 0, Bool, CONST, NULL, NULL); 
+                        node* root = newNode(1, 0, Bool, CONST, NULL, NULL, NULL); 
                         (yyval.tn) = newTree(root, NULL, NULL);
                 ;}
     break;
@@ -2003,7 +2003,7 @@ yyreduce:
   case 63:
 #line 330 "calc-sintaxis.y"
     {
-                        node* root = newNode(0, 0, Bool, CONST, NULL, NULL); 
+                        node* root = newNode(0, 0, Bool, CONST, NULL, NULL, NULL); 
                         (yyval.tn) = newTree(root, NULL, NULL);
                 ;}
     break;

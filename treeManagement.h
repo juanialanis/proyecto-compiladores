@@ -1,4 +1,4 @@
-enum TLabel { VAR, VDECL, NONE, NONEBLOCK, BLOCKDECL, IFTHEN, IFTELSE, MCALL ,MDECL, MDECLTYPE, EXT, STMT,STMTASSIGN, STMTWHILE, SUMA, MULTIPLICACION, RESTA, SEMICOLON, DIVISION, LAND, LOR, MAYOR,MENOR, COMMA, NEGATIVEEXP, NOTEXP ,LMOD,LEQUAL,PROG, RET, CONST};
+enum TLabel { PARAM, VAR, VDECL, NONE, NONEBLOCK, BLOCKDECL, IFTHEN, IFTELSE, MCALL ,MDECL, MDECLTYPE, EXT, STMT,STMTASSIGN, STMTWHILE, SUMA, MULTIPLICACION, RESTA, SEMICOLON, DIVISION, LAND, LOR, MAYOR,MENOR, COMMA, NEGATIVEEXP, NOTEXP ,LMOD,LEQUAL,PROG, RET, CONST};
 
 enum TType {None, Int, Bool, Void };
 
@@ -6,6 +6,11 @@ typedef struct idList {
     char *idName;
     struct idList* next;
 } ids;
+
+typedef struct paramList{
+    enum TType type;
+    struct paramList* next;
+} params;
 
 //struct that defines a node*
 typedef struct infoNode {
@@ -15,6 +20,7 @@ typedef struct infoNode {
     enum TLabel label;
     char* text;
     ids* idList;
+    params* paramList;
 } node;
 
 //struct that defines a symbols table
@@ -52,7 +58,7 @@ char* getLabel(enum TLabel label);
 //method that create a new tree
 tree* newTree(node* newatr, tree *newleft, tree *newright);
 
-node* newNode(int value,int line, enum TType type, enum TLabel label, char* text, ids* idList);
+node* newNode(int value,int line, enum TType type, enum TLabel label, char* text, ids* idList, params* paramList);
 
 //as the concatenation gave us a lot of problems, we finally decided to use this option that we found in
 //https://es.stackoverflow.com/questions/146607/c%C3%B3mo-concatenar-cadenas-de-car%C3%A1cteres-sin-usar-la-funci%C3%B3n-strcat
@@ -95,3 +101,13 @@ void checkValidation(tree* tree);
 symbolTable* findVariable(char* id);
 
 void findReturns(tree* tree, enum TType type, int* result);
+
+void findParams(tree* tree, params* paramList);
+
+void addParam(params* paramList, enum TType param);
+
+params* newParam(enum TType type);
+
+void addTypeFirst(params** list, enum TType type);
+
+void generateTypesList(tree* tree, params** list);
