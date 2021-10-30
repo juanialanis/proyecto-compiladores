@@ -6,7 +6,9 @@
 
 char* TLabelString[] = { "PARAM","VAR", "VDECL", "NONE", "NONEBLOCK", "BLOCKDECL", "IFTHEN", "IFTELSE", "MCALL" ,"MDECL", "MDECLTYPE", "EXT", "STMT","STMTASSIGN", "STMTWHILE", "SUMA", "MULTIPLICACION", "RESTA", "SEMICOLON", "DIVISION", "LAND", "LOR", "MAYOR","MENOR", "COMMA", "NEGATIVEEXP", "NOTEXP" ,"LMOD","LEQUAL","PROG", "RET", "CONST"};
 
-char* TTypeString[] = {"None", "Int", "Bool", "Void" };
+char* TTypeString[]  = {"None", "Int", "Bool", "Void" };
+
+char* TInstruction[] = {"IC_ADD", "IC_SUB", "IC_PLUS", "IC_DIV", "IC_MOD", "IC_AND", "IC_OR", "IC_NOT", "IC_EQUALAR", "IC_EQUALLOG", "IC_NEG", "IC_MINOR", "IC_MAJOR", "IC_ASSING", "IC_IF", "IC_WHILE", "IC_LABEL", "IC_JUMP", "IC_RETINT", "IC_RETBOOL", "IC_RETVOID", "IC_PPARAM", "IC_CALL", "IC_LOAD", "IC_BEGIN_FUNCTION", "IC_END_FUNCTION"};
 
 // table of symbols
 stStack* stackOfLevels;
