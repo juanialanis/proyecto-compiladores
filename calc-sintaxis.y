@@ -9,6 +9,7 @@ extern int yylineno;
 
 //table of symbols
 stStack* stackOfLevels = NULL;
+listThreeDir* threeDirList = NULL;
 
 int yylex();
 int yyerror(char *);
@@ -36,23 +37,33 @@ int yyerror(char *);
 prog: PROGRAM '{' variables methods '}'  { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL);
                                                 $$ = newTree(root, $3, $4); 
-                                                // printTree($$,0);
+                                                //printTree($$,0);
                                                 createLevelOfSymbolTable($$);
                                                 checkValidation($$);
+                                                printf("voy a crear");
+                                                createInstructions($$);
                                         };
        | PROGRAM '{' methods '}'          { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL);
-                                                $$ = newTree(root, $3, NULL); 
-                                                // printTree($$,0);
+                                                $$ = newTree(root, NULL, $3); 
+                                                //printTree($$,0);
                                                 createLevelOfSymbolTable($$);
+                                                createInstructions($$);
                                                 checkValidation($$);
+                                                printf("\n");
+                                                printInstructions();
+                                                
+
                                         };      
        | PROGRAM '{' variables '}'      { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL);
-                                                $$ = newTree(root, NULL, $3); 
-                                                // printTree($$,0);
+                                                $$ = newTree(root, $3, NULL); 
+                                                //printTree($$,0);
                                                 createLevelOfSymbolTable($$);
                                                 checkValidation($$);
+                                                printf("voy a crear");
+                                                createInstructions($$);
+
                                         };
        | PROGRAM '{' '}'                { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL);
@@ -60,6 +71,8 @@ prog: PROGRAM '{' variables methods '}'  {
                                                 //printTree($$,0);
                                                 createLevelOfSymbolTable($$);
                                                 checkValidation($$);
+                                                createInstructions($$);
+
                                         };
 ;  
 
@@ -117,7 +130,6 @@ method_type: type ID    {
                         }
             | VOID ID   {
                                 node* root = newNode(0, yylineno, Void, NONE, $2,NULL,NULL);
-                                treetoString(root);
                                 $$ = newTree(root, NULL, NULL);
                         }
 ;

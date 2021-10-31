@@ -2,9 +2,6 @@ enum TLabel { PARAM, VAR, VDECL, NONE, NONEBLOCK, BLOCKDECL, IFTHEN, IFTELSE, MC
 
 enum TType {None, Int, Bool, Void };
 
-/* Constantes para definir tipo de las instrucciones de codgo intermedio. */
-enum TInstruction {IC_ADD, IC_SUB, IC_PLUS, IC_DIV, IC_MOD, IC_AND, IC_OR,IC_NOT, IC_EQUALAR, IC_EQUALLOG, IC_NEG, IC_MINOR, IC_MAJOR, IC_ASSING, IC_IF, IC_WHILE, IC_LABEL, IC_JUMP, IC_RETINT, IC_RETBOOL, IC_RETVOID, IC_PPARAM, IC_CALL, IC_LOAD, IC_BEGIN_FUNCTION, IC_END_FUNCTION};
-
 typedef struct idList {
     char *idName;
     struct idList* next;
@@ -46,10 +43,10 @@ typedef struct stStack {
 } stStack;
 
 typedef struct threeDir {
-    enum TInstruction name;
+    enum TLabel name;
     node* op1;
     node* op2;
-    node* result;
+    node* resu;
 } threeDir;
 
 typedef struct listThreeDir {
@@ -59,6 +56,8 @@ typedef struct listThreeDir {
 
 //table of symbols
 extern stStack* stackOfLevels;
+
+extern listThreeDir* threeDirList;
 
 ids* newIdList(char* id, ids *next);
 
@@ -125,3 +124,13 @@ params* newParam(enum TType type);
 void addTypeFirst(params** list, enum TType type);
 
 void generateTypesList(tree* tree, params** list);
+
+threeDir* newInstruction(enum TLabel instruction, node* operator1, node* operator2, node* result);
+
+listThreeDir* newThreeDirElement(threeDir* element);
+
+void createInstructions(tree* tree);
+
+void checkOperator(tree* tree);
+
+void printInstructions();

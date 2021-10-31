@@ -8,8 +8,6 @@ char* TLabelString[] = { "PARAM","VAR", "VDECL", "NONE", "NONEBLOCK", "BLOCKDECL
 
 char* TTypeString[]  = {"None", "Int", "Bool", "Void" };
 
-char* TInstruction[] = {"IC_ADD", "IC_SUB", "IC_PLUS", "IC_DIV", "IC_MOD", "IC_AND", "IC_OR", "IC_NOT", "IC_EQUALAR", "IC_EQUALLOG", "IC_NEG", "IC_MINOR", "IC_MAJOR", "IC_ASSING", "IC_IF", "IC_WHILE", "IC_LABEL", "IC_JUMP", "IC_RETINT", "IC_RETBOOL", "IC_RETVOID", "IC_PPARAM", "IC_CALL", "IC_LOAD", "IC_BEGIN_FUNCTION", "IC_END_FUNCTION"};
-
 // table of symbols
 stStack* stackOfLevels;
 
@@ -48,6 +46,36 @@ node* newNode(int value,int line, enum TType type, enum TLabel label, char* text
     newNode->idList = idList;
     newNode->paramList = paramList;
     return newNode;
+}
+
+threeDir* newInstruction(enum TLabel instruction, node* operator1, node* operator2, node* result) {
+    threeDir* newInstruction = (threeDir*) malloc(sizeof(threeDir));
+    newInstruction->name = instruction;
+    newInstruction->op1 = operator1;
+    newInstruction->op2 = operator2;
+    newInstruction->resu = result;
+    return newInstruction;
+}
+
+listThreeDir* newThreeDirElement(threeDir* element) {
+    listThreeDir* newThreeDirElement = (listThreeDir*) malloc(sizeof(listThreeDir));
+    newThreeDirElement->node = element;
+    newThreeDirElement->next = NULL;
+    return newThreeDirElement;
+}
+
+void insertLast(listThreeDir* new) {
+    listThreeDir* pointer = threeDirList;
+    if (pointer == NULL)
+    {
+        threeDirList = new;
+        return;
+    }
+    while (pointer->next != NULL) {
+        pointer = pointer->next;
+    }
+    pointer->next = new;
+    return;
 }
 
 //  as the concatenation gave us a lot of problems, we finally decided to use this option that we found in
@@ -117,6 +145,20 @@ void printTree(tree* tree, int space) {
         treetoString(tree->atr);
     }
     printTree(tree->left, space);
+} 
+
+void printInstructions() {
+    if(threeDirList==NULL)
+        return;
+    while (threeDirList != NULL)
+    {
+        printf("\n%s:\n",TLabelString[threeDirList->node->name]);
+        treetoString(threeDirList->node->op1);
+        treetoString(threeDirList->node->op2);
+        treetoString(threeDirList->node->resu);
+        printf("\n");
+        threeDirList = threeDirList->next;
+    }
 } 
 
 // method that creates a new table of symbols
@@ -462,4 +504,30 @@ void findReturns(tree* tree, enum TType type, int* result){
         findReturns(tree->left,type,result);
         findReturns(tree->right,type,result);
     }
+}
+
+void createInstructions(tree* tree) {
+    if (tree == NULL) return; 
+
+    createInstructions(tree->left);
+    //insertar
+    checkOperator(tree);
+    createInstructions(tree->right);
+}
+
+
+void checkOperator(tree* tree) {
+    threeDir* instru = NULL;
+    if (tree->atr->label == SUMA || tree->atr->label == MULTIPLICACION || tree->atr->label == RESTA || tree->atr->label == DIVISION || tree->atr->label == LMOD) {
+        if (tree->left->st != NULL && tree->right->st != NULL && tree->st)
+        {
+            printf("entro aca");
+            instru = newInstruction(tree->atr->label, tree->left->st->cSymbol,tree->right->st->cSymbol, tree->st->cSymbol);
+        }
+        else {
+            instru = newInstruction(tree->atr->label, tree->left->atr,tree->right->atr, tree->atr);
+        }
+        listThreeDir* node = newThreeDirElement(instru);
+        insertLast(node);
+    } 
 }
