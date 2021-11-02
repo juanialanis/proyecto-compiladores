@@ -4,7 +4,7 @@
 #include "treeManagement.h"
 #define COUNT 15
 
-char* TLabelString[] = { "PARAM","VAR", "VDECL", "NONE", "NONEBLOCK", "BLOCKDECL", "IFTHEN", "IFTELSE", "MCALL" ,"MDECL", "MDECLTYPE", "EXT", "STMT","STMTASSIGN", "STMTWHILE", "SUMA", "MULTIPLICACION", "RESTA", "SEMICOLON", "DIVISION", "LAND", "LOR", "MAYOR","MENOR", "COMMA", "NEGATIVEEXP", "NOTEXP" ,"LMOD","LEQUAL","PROG", "RET", "CONST"};
+char* TLabelString[] = { "PARAM","VAR", "VDECL", "NONE", "NONEBLOCK", "BLOCKDECL", "IFTHEN", "IFTELSE", "MCALL" ,"MDECL", "MDECLTYPE", "EXT", "STMT","STMTASSIGN", "STMTWHILE", "SUMA", "MULTIPLICACION", "RESTA", "SEMICOLON", "DIVISION", "LAND", "LOR", "MAYOR","MENOR", "COMMA", "NEGATIVEEXP", "NOTEXP" ,"LMOD","LEQUAL","PROG", "RET", "CONST", "IC_BEGIN_FUNCTION", "IC_END_FUNCTION", "IC_LOAD", "LABEL", "JUMPFALSE"};
 
 char* TTypeString[]  = {"None", "Int", "Bool", "Void" };
 
@@ -106,7 +106,13 @@ char* getValue(int i) {
 }
 
 // method that take an node* of an tree and parse it to a char* with all the fields of the tree
-char* treetoString(node* atr){
+void treetoString(node* atr){ 
+    if (atr == NULL)
+    {   
+        printf("\n");
+        return;
+    }
+    
     char* value = cat("Value: ", getValue(atr->value));
     char* type = TTypeString[atr->type];
     char* text = ",Type: ";
@@ -128,7 +134,6 @@ char* treetoString(node* atr){
         listIds = listIds->next;
     }
     printf("%s\n", result);
-    return result;
 }
 
 void printTree(tree* tree, int space) {
@@ -507,27 +512,114 @@ void findReturns(tree* tree, enum TType type, int* result){
 }
 
 void createInstructions(tree* tree) {
+    insertDecl(tree->left);
+    insertStms(tree->right);
+}
+
+void insertDecl(tree* tree) {
+    if (tree == NULL) return;
+
+    insertDecl(tree->left); 
+
+    threeDir* instru = NULL;
+    listThreeDir* node = NULL;
+    if (tree->atr->label == VDECL)
+    {
+        /*
+        ids* ids = tree->left->atr->idList;
+        while (ids != NULL) {
+            idNode = newNode(tree->left->atr->value, tree->left->atr->line, tree->left->atr->type, tree->left->atr->label, ids->idName, NULL,NULL);
+            symbolTable* st = newTableOfSymbols(idNode);
+            tree->st = st;
+            tope = addLast(st, tope);
+            ids = ids->next;
+        }
+        */
+        instru = newInstruction(IC_LOAD, NULL, NULL, tree->left->atr);
+        node = newThreeDirElement(instru);
+        insertLast(node);
+    }
+
+    insertDecl(tree->right);
+
+}
+void insertStms(tree* tree) {
     if (tree == NULL) return; 
 
-    createInstructions(tree->left);
-    //insertar
-    checkOperator(tree);
-    createInstructions(tree->right);
+    insertStms(tree->left);
+
+    threeDir* instru = NULL;
+    listThreeDir* node = NULL;
+    if (tree->atr->label == MDECL && tree->right->atr->label != EXT)
+    {
+        instru = newInstruction(IC_BEGIN_FUNCTION, NULL, NULL, NULL);
+        node = newThreeDirElement(instru);
+        insertLast(node);
+        checkOperator(tree);
+        instru = newInstruction(IC_END_FUNCTION, NULL, NULL, NULL);
+        node = newThreeDirElement(instru);
+        insertLast(node);
+    }    
+    insertStms(tree->right);
 }
 
 
 void checkOperator(tree* tree) {
+    if (tree == NULL) return; 
+    checkOperator(tree->left);
     threeDir* instru = NULL;
-    if (tree->atr->label == SUMA || tree->atr->label == MULTIPLICACION || tree->atr->label == RESTA || tree->atr->label == DIVISION || tree->atr->label == LMOD) {
-        if (tree->left->st != NULL && tree->right->st != NULL && tree->st)
-        {
-            printf("entro aca");
-            instru = newInstruction(tree->atr->label, tree->left->st->cSymbol,tree->right->st->cSymbol, tree->st->cSymbol);
-        }
-        else {
-            instru = newInstruction(tree->atr->label, tree->left->atr,tree->right->atr, tree->atr);
-        }
+    node* op1 = NULL;
+    node* op2 = NULL;
+    node* result = NULL;
+    listThreeDir* node = NULL;
+    if (tree->atr->label == SUMA || tree->atr->label == MULTIPLICACION || tree->atr->label == RESTA || tree->atr->label == DIVISION || tree->atr->label == LMOD || tree->atr->label == LAND || tree->atr->label == LOR || tree->atr->label == LEQUAL || tree->atr->label == MAYOR || tree->atr->label == MENOR) 
+    {
+        op1 = (tree->left->st != NULL) ? tree->left->st->cSymbol : tree->left->atr;
+        op2 = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
+        result = (tree->st != NULL) ? tree->st->cSymbol : tree->atr;
+        instru = newInstruction(tree->atr->label, op1,op2, result);
         listThreeDir* node = newThreeDirElement(instru);
         insertLast(node);
     } 
+    else if ( tree->atr->label == STMTASSIGN ) 
+    {
+        op1 = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
+        result = (tree->left->st != NULL) ? tree->left->st->cSymbol : tree->left->atr;
+        instru = newInstruction(tree->atr->label, op1,op2, result);
+        listThreeDir* node = newThreeDirElement(instru);
+        insertLast(node);
+
+    } 
+    else if (tree->atr->label == VDECL)
+    {
+        /*
+        ids* ids = tree->left->atr->idList;
+        while (ids != NULL) {
+            idNode = newNode(tree->left->atr->value, tree->left->atr->line, tree->left->atr->type, tree->left->atr->label, ids->idName, NULL,NULL);
+            symbolTable* st = newTableOfSymbols(idNode);
+            tree->st = st;
+            tope = addLast(st, tope);
+            ids = ids->next;
+        }
+        */
+        instru = newInstruction(IC_LOAD, NULL, NULL, tree->left->atr);
+        node = newThreeDirElement(instru);
+        insertLast(node);
+    }
+    else if (tree->atr->label == NOTEXP || tree->atr->label == NEGATIVEEXP || tree->atr->label == RET)
+    {
+        instru = newInstruction(tree->atr->label, NULL, NULL, tree->right->atr);
+        node = newThreeDirElement(instru);
+        insertLast(node);
+    }
+    else if (tree->atr->label == IFTELSE)
+    {
+        op1 = (tree->left->left->st != NULL) ? tree->left->left->st->cSymbol : tree->left->left->atr;
+        instru = newInstruction(JUMPFALSE, op1, NULL, NULL);
+        node = newThreeDirElement(instru);
+        insertLast(node);
+    }
+    
+ 
+    checkOperator(tree->right);
 }

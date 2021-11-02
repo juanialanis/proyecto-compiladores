@@ -1,4 +1,4 @@
-enum TLabel { PARAM, VAR, VDECL, NONE, NONEBLOCK, BLOCKDECL, IFTHEN, IFTELSE, MCALL ,MDECL, MDECLTYPE, EXT, STMT,STMTASSIGN, STMTWHILE, SUMA, MULTIPLICACION, RESTA, SEMICOLON, DIVISION, LAND, LOR, MAYOR,MENOR, COMMA, NEGATIVEEXP, NOTEXP ,LMOD,LEQUAL,PROG, RET, CONST};
+enum TLabel { PARAM, VAR, VDECL, NONE, NONEBLOCK, BLOCKDECL, IFTHEN, IFTELSE, MCALL ,MDECL, MDECLTYPE, EXT, STMT,STMTASSIGN, STMTWHILE, SUMA, MULTIPLICACION, RESTA, SEMICOLON, DIVISION, LAND, LOR, MAYOR,MENOR, COMMA, NEGATIVEEXP, NOTEXP ,LMOD,LEQUAL,PROG, RET, CONST, IC_BEGIN_FUNCTION, IC_END_FUNCTION, IC_LOAD, LABEL, JUMPFALSE};
 
 enum TType {None, Int, Bool, Void };
 
@@ -59,6 +59,8 @@ extern stStack* stackOfLevels;
 
 extern listThreeDir* threeDirList;
 
+extern int label_num;
+
 ids* newIdList(char* id, ids *next);
 
  //method that returns the string equivalent to the types
@@ -82,7 +84,7 @@ char* cat(char *s1, char *s2);
 char* getValue(int i);
 
 //method that take an node* of an tree and parse it to a char* with all the fields of the tree
-char* treetoString(node* atr);
+void treetoString(node* atr);
 
 //method that generates a sample of the tree
 //void printTree(tree* tree);
@@ -134,3 +136,7 @@ void createInstructions(tree* tree);
 void checkOperator(tree* tree);
 
 void printInstructions();
+
+void insertDecl(tree* tree);
+
+void insertStms(tree* tree);

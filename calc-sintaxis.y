@@ -10,6 +10,7 @@ extern int yylineno;
 //table of symbols
 stStack* stackOfLevels = NULL;
 listThreeDir* threeDirList = NULL;
+int label_num = 1;
 
 int yylex();
 int yyerror(char *);
@@ -37,16 +38,16 @@ int yyerror(char *);
 prog: PROGRAM '{' variables methods '}'  { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL);
                                                 $$ = newTree(root, $3, $4); 
-                                                //printTree($$,0);
+                                                printTree($$,0);
                                                 createLevelOfSymbolTable($$);
                                                 checkValidation($$);
-                                                printf("voy a crear");
                                                 createInstructions($$);
+                                                printInstructions();
                                         };
        | PROGRAM '{' methods '}'          { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL);
                                                 $$ = newTree(root, NULL, $3); 
-                                                //printTree($$,0);
+                                                printTree($$,0);
                                                 createLevelOfSymbolTable($$);
                                                 createInstructions($$);
                                                 checkValidation($$);

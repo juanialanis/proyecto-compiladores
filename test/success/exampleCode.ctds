@@ -1,5 +1,7 @@
 Program
 {
+    bool x,aux, asdasd;
+    integer z,e;
 integer inc(integer x)
 {
 return x + 1 + 2;
@@ -12,9 +14,10 @@ bool p;
 integer y, bv, z, asdasdasd;
 integer x,w;
 y = get_int();
-if ((w%x) == 0) then
+z = -z;
+if (!p) then
 {
-print_int(y);
+x = x + 1 + 2;
 }
 else
 {
