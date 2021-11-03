@@ -19,9 +19,8 @@ if (!p) then
 {
 x = x + 1 + 2;
 }
-else
-{
+
 return print_int(inc(y));
-}
+
 }
 }

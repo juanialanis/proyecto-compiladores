@@ -4,7 +4,7 @@
 #include "treeManagement.h"
 #define COUNT 15
 
-char* TLabelString[] = { "PARAM","VAR", "VDECL", "NONE", "NONEBLOCK", "BLOCKDECL", "IFTHEN", "IFTELSE", "MCALL" ,"MDECL", "MDECLTYPE", "EXT", "STMT","STMTASSIGN", "STMTWHILE", "SUMA", "MULTIPLICACION", "RESTA", "SEMICOLON", "DIVISION", "LAND", "LOR", "MAYOR","MENOR", "COMMA", "NEGATIVEEXP", "NOTEXP" ,"LMOD","LEQUAL","PROG", "RET", "CONST", "IC_BEGIN_FUNCTION", "IC_END_FUNCTION", "IC_LOAD", "LABEL", "JUMPFALSE"};
+char* TLabelString[] = { "PARAM","VAR", "VDECL", "NONE", "NONEBLOCK", "BLOCKDECL", "IFTHEN", "IFTELSE", "MCALL" ,"MDECL", "MDECLTYPE", "EXT", "STMT","STMTASSIGN", "STMTWHILE", "SUMA", "MULTIPLICACION", "RESTA", "SEMICOLON", "DIVISION", "LAND", "LOR", "MAYOR","MENOR", "COMMA", "NEGATIVEEXP", "NOTEXP" ,"LMOD","LEQUAL","PROG", "RET", "CONST", "IC_BEGIN_FUNCTION", "IC_END_FUNCTION", "IC_LOAD", "LABEL", "JUMPFALSE", "JUMP"};
 
 char* TTypeString[]  = {"None", "Int", "Bool", "Void" };
 
@@ -566,60 +566,119 @@ void insertStms(tree* tree) {
 
 void checkOperator(tree* tree) {
     if (tree == NULL) return; 
-    checkOperator(tree->left);
     threeDir* instru = NULL;
     node* op1 = NULL;
     node* op2 = NULL;
     node* result = NULL;
     listThreeDir* node = NULL;
-    if (tree->atr->label == SUMA || tree->atr->label == MULTIPLICACION || tree->atr->label == RESTA || tree->atr->label == DIVISION || tree->atr->label == LMOD || tree->atr->label == LAND || tree->atr->label == LOR || tree->atr->label == LEQUAL || tree->atr->label == MAYOR || tree->atr->label == MENOR) 
+
+    if (tree->atr->label == IFTELSE)
     {
-        op1 = (tree->left->st != NULL) ? tree->left->st->cSymbol : tree->left->atr;
-        op2 = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
-        result = (tree->st != NULL) ? tree->st->cSymbol : tree->atr;
-        instru = newInstruction(tree->atr->label, op1,op2, result);
-        listThreeDir* node = newThreeDirElement(instru);
-        insertLast(node);
-    } 
-    else if ( tree->atr->label == STMTASSIGN ) 
-    {
-        op1 = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
-        result = (tree->left->st != NULL) ? tree->left->st->cSymbol : tree->left->atr;
-        instru = newInstruction(tree->atr->label, op1,op2, result);
-        listThreeDir* node = newThreeDirElement(instru);
+        
+        op1 = (tree->left->left->st != NULL) ? tree->left->left->st->cSymbol : tree->left->left->atr;
+        instru = newInstruction(tree->left->left->atr->label, NULL, NULL, op1);
+        node = newThreeDirElement(instru);
         insertLast(node);
 
-    } 
-    else if (tree->atr->label == VDECL)
-    {
-        /*
-        ids* ids = tree->left->atr->idList;
-        while (ids != NULL) {
-            idNode = newNode(tree->left->atr->value, tree->left->atr->line, tree->left->atr->type, tree->left->atr->label, ids->idName, NULL,NULL);
-            symbolTable* st = newTableOfSymbols(idNode);
-            tree->st = st;
-            tope = addLast(st, tope);
-            ids = ids->next;
-        }
-        */
-        instru = newInstruction(IC_LOAD, NULL, NULL, tree->left->atr);
-        node = newThreeDirElement(instru);
-        insertLast(node);
-    }
-    else if (tree->atr->label == NOTEXP || tree->atr->label == NEGATIVEEXP || tree->atr->label == RET)
-    {
-        instru = newInstruction(tree->atr->label, NULL, NULL, tree->right->atr);
-        node = newThreeDirElement(instru);
-        insertLast(node);
-    }
-    else if (tree->atr->label == IFTELSE)
-    {
         op1 = (tree->left->left->st != NULL) ? tree->left->left->st->cSymbol : tree->left->left->atr;
         instru = newInstruction(JUMPFALSE, op1, NULL, NULL);
         node = newThreeDirElement(instru);
         insertLast(node);
+
+        checkOperator(tree->left->right);
+
+        instru = newInstruction(LABEL, NULL, NULL, NULL);
+        node = newThreeDirElement(instru);
+        insertLast(node);
+        
+        checkOperator(tree->right);
+        
+    } else if (tree->atr->label == IFTHEN)
+    {
+        
+        checkOperator(tree->left);
+
+        op1 = (tree->left->right->st != NULL) ? tree->left->right->st->cSymbol : tree->left->right->atr;
+        instru = newInstruction(JUMPFALSE, op1, NULL, NULL);
+        node = newThreeDirElement(instru);
+        insertLast(node);
+
+        checkOperator(tree->left->right);
+
+        checkOperator(tree->right);
+        
+        instru = newInstruction(LABEL, NULL, NULL, NULL);
+        node = newThreeDirElement(instru);
+        insertLast(node);
+
+    } else if (tree->atr->label == STMTWHILE)
+    {
+        instru = newInstruction(LABEL, NULL, NULL, NULL);
+        node = newThreeDirElement(instru);
+        insertLast(node);
+        
+        checkOperator(tree->left);
+
+        op1 = (tree->left->right->st != NULL) ? tree->left->right->st->cSymbol : tree->left->right->atr;
+        instru = newInstruction(JUMPFALSE, op1, NULL, NULL);
+        node = newThreeDirElement(instru);
+        insertLast(node);
+
+        checkOperator(tree->right);
+
+        instru = newInstruction(JUMP, NULL, NULL, NULL);
+        node = newThreeDirElement(instru);
+        insertLast(node);
+
+        instru = newInstruction(LABEL, NULL, NULL, NULL);
+        node = newThreeDirElement(instru);
+        insertLast(node);
+        
+    } else {
+
+        checkOperator(tree->left);
+        if (tree->atr->label == SUMA || tree->atr->label == MULTIPLICACION || tree->atr->label == RESTA || tree->atr->label == DIVISION || tree->atr->label == LMOD || tree->atr->label == LAND || tree->atr->label == LOR || tree->atr->label == LEQUAL || tree->atr->label == MAYOR || tree->atr->label == MENOR) 
+        {
+            op1 = (tree->left->st != NULL) ? tree->left->st->cSymbol : tree->left->atr;
+            op2 = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
+            result = (tree->st != NULL) ? tree->st->cSymbol : tree->atr;
+            instru = newInstruction(tree->atr->label, op1,op2, result);
+            listThreeDir* node = newThreeDirElement(instru);
+            insertLast(node);
+        } 
+        else if ( tree->atr->label == STMTASSIGN ) 
+        {
+            op1 = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
+            result = (tree->left->st != NULL) ? tree->left->st->cSymbol : tree->left->atr;
+            instru = newInstruction(tree->atr->label, op1,op2, result);
+            listThreeDir* node = newThreeDirElement(instru);
+            insertLast(node);
+
+        } 
+        else if (tree->atr->label == VDECL)
+        {
+            instru = newInstruction(IC_LOAD, NULL, NULL, tree->left->atr);
+            node = newThreeDirElement(instru);
+            insertLast(node);
+        }
+        else if (tree->atr->label == NOTEXP || tree->atr->label == NEGATIVEEXP || tree->atr->label == RET)
+        {
+            instru = newInstruction(tree->atr->label, NULL, NULL, tree->right->atr);
+            node = newThreeDirElement(instru);
+            insertLast(node);
+        }
+        checkOperator(tree->right);
     }
     
- 
-    checkOperator(tree->right);
 }
+
+/*
+int isEquals(listThreeDir* node1, listThreeDir* node2){
+    int equalsLabels = node1->node->name == node2->node->name;
+    int equalsop1 = (node1->node->op1 == NULL && node2->node->op1 == NULL) || !(node1->node->op1 == NULL && node2->node->op1 != NULL) && !(node1->node->op1 != NULL && node2->node->op1 == NULL) && (node1->node->op1->value == node2->node->op1->value && node1->node->op1->line == node2->node->op1->line && node1->node->op1->type == node2->node->op1->type && node1->node->op1->label == node2->node->op1->label && node1->node->op1->text == node2->node->op1->text);
+    int equalsop2 = (node1->node->op2 == NULL && node2->node->op2 == NULL) || !(node1->node->op2 != NULL && node2->node->op2 == NULL) && !(node1->node->op2 != NULL && node2->node->op2 == NULL) && (node1->node->op2->value == node2->node->op2->value && node1->node->op2->line == node2->node->op2->line && node1->node->op2->type == node2->node->op2->type && node1->node->op2->label == node2->node->op2->label && node1->node->op2->text == node2->node->op2->text);
+    int equalres = (node1->node->resu == NULL && node2->node->resu == NULL) || !(node1->node->resu == NULL && node2->node->resu != NULL) && !(node1->node->resu != NULL && node2->node->resu == NULL) && (node1->node->resu->value == node2->node->resu->value && node1->node->resu->line == node2->node->resu->line && node1->node->resu->type == node2->node->resu->type && node1->node->resu->label == node2->node->resu->label && node1->node->resu->text == node2->node->resu->text);
+    return equalsLabels && equalsop1 && equalsop2 && equalres;
+}
+
+*/
