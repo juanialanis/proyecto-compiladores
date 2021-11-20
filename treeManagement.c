@@ -8,6 +8,9 @@ char* TLabelString[] = { "PARAM","VAR", "VDECL", "NONE", "NONEBLOCK", "BLOCKDECL
 
 char* TTypeString[]  = {"None", "Int", "Bool", "Void" };
 
+int offset = 8; 
+
+
 // table of symbols
 stStack* stackOfLevels;
 
@@ -36,7 +39,7 @@ tree* newTree(node* newatr, tree *newleft, tree *newright){
 }
 
 
-node* newNode(int value,int line, enum TType type, enum TLabel label, char* text, ids* idList, params* paramList){
+node* newNode(int value,int line, enum TType type, enum TLabel label, char* text, ids* idList, params* paramList, int offset){
     node* newNode = malloc(sizeof(node));
     newNode->value = value;
     newNode->line = line;
@@ -45,6 +48,7 @@ node* newNode(int value,int line, enum TType type, enum TLabel label, char* text
     newNode->text = text;
     newNode->idList = idList;
     newNode->paramList = paramList;
+    newNode->offset = offset;
     return newNode;
 }
 
@@ -113,27 +117,17 @@ void treetoString(node* atr){
         return;
     }
     
-    char* value = cat("Value: ", getValue(atr->value));
-    char* type = TTypeString[atr->type];
-    char* text = ",Type: ";
-    char* result = cat(text,type);
-    result = cat(value,result);
-    text = ",Label: ";
-    result = cat(result,text);
-    char* label = TLabelString[atr->label];
-    result = cat (result, label);
-    char* line = cat(",Line: ", getValue(atr->line));
-    result = cat(result,line);
-    result = cat(result, ",Text: ");
-    result = cat(result,atr->text != NULL ? atr->text : "");
-    result = cat(result, " IDS:  ");
+    printf("Value: %d, Type: %s, Label: %s, Line: %d, Text: ",atr->value, TTypeString[atr->type], TLabelString[atr->label], atr->line);
+    if (atr->text != NULL)
+        printf("%s", atr->text);
+    
+    printf(", IDS:");
     ids* listIds = atr->idList;
     while(listIds != NULL) {
-        result = cat(result, listIds->idName);
-        result = cat(result, ", ");
+        printf(" %s,", listIds->idName);
         listIds = listIds->next;
     }
-    printf("%s\n", result);
+    printf(", Offset: %d \n", atr->offset);
 }
 
 void printTree(tree* tree, int space) {
@@ -155,15 +149,17 @@ void printTree(tree* tree, int space) {
 void printInstructions() {
     if(threeDirList==NULL)
         return;
-    while (threeDirList != NULL)
+    listThreeDir* threeDirListAux = threeDirList;
+    while (threeDirListAux != NULL)
     {
-        printf("\n%s:\n",TLabelString[threeDirList->node->name]);
-        treetoString(threeDirList->node->op1);
-        treetoString(threeDirList->node->op2);
-        treetoString(threeDirList->node->resu);
+        printf("\n%s:\n",TLabelString[threeDirListAux->node->name]);
+        treetoString(threeDirListAux->node->op1);
+        treetoString(threeDirListAux->node->op2);
+        treetoString(threeDirListAux->node->resu);
         printf("\n");
-        threeDirList = threeDirList->next;
+        threeDirListAux = threeDirListAux->next;
     }
+    createAssembly();
 } 
 
 // method that creates a new table of symbols
@@ -218,7 +214,8 @@ stStack* addLevel(symbolTable* s) {
 
 
 void createLevelOfSymbolTable(tree* tree) {
-    node* idNode = newNode(0, 0, 0, 0, "", NULL,NULL);
+    node* idNode = newNode(0, 0, 0, 0, "", NULL,NULL, 0);
+
     symbolTable* st = newTableOfSymbols(idNode);
     createLevelZero(tree,st);
     stackOfLevels = newStack(st);
@@ -242,7 +239,8 @@ void createLevelZero(tree* tree, symbolTable* tope) {
         node* idNode;
         ids* ids = tree->left->atr->idList;
         while (ids != NULL) {
-            idNode = newNode(tree->left->atr->value, tree->left->atr->line, tree->left->atr->type, tree->left->atr->label, ids->idName, NULL,NULL);
+            idNode = newNode(tree->left->atr->value, tree->left->atr->line, tree->left->atr->type, tree->left->atr->label, ids->idName, NULL,NULL, 0);
+            //offset += 8;
             symbolTable* st = newTableOfSymbols(idNode);
             tree->st = st;
             tope = addLast(st, tope);
@@ -286,7 +284,8 @@ void createLevels(tree* tree) {
         return;
     if (tree->atr->label == MDECL && tree->left->atr->label == MDECLTYPE && tree->right->atr->label == BLOCKDECL)
     {
-        node* idNode = newNode(0, 0, 0, 0, "", NULL,NULL);
+        offset = 8;
+        node* idNode = newNode(0, 0, 0, 0, "", NULL,NULL, 0);
         symbolTable* st2 = newTableOfSymbols(idNode);
         stStack* newStackLevel = newStack(st2);
         newStackLevel->next = stackOfLevels;
@@ -302,7 +301,7 @@ void createLevels(tree* tree) {
     else if (tree->atr->label == BLOCKDECL)
     {
         //creo tabla de simboloss
-        node* idNode = newNode(0, 0, 0, 0, "", NULL,NULL);
+        node* idNode = newNode(0, 0, 0, 0, "", NULL,NULL, 0);
         symbolTable* st2 = newTableOfSymbols(idNode);
         stStack* newStackLevel = newStack(st2);
         newStackLevel->next = stackOfLevels;
@@ -360,8 +359,10 @@ void createSubTableSymbol(tree* tree, symbolTable* tope) {
     if(tree->atr->label == VDECL) {
         node* idNode;
         ids* ids = tree->left->atr->idList;
+        tree->left->atr->offset = offset;
         while (ids != NULL) {
-            idNode = newNode(tree->left->atr->value, tree->left->atr->line, tree->left->atr->type, tree->left->atr->label, ids->idName, NULL,NULL);
+            idNode = newNode(tree->left->atr->value, tree->left->atr->line, tree->left->atr->type, tree->left->atr->label, ids->idName, NULL,NULL, offset);
+            offset += 8;
             symbolTable* st = newTableOfSymbols(idNode);
             tree->left->st = st;
             addLast(st, tope);
@@ -525,16 +526,6 @@ void insertDecl(tree* tree) {
     listThreeDir* node = NULL;
     if (tree->atr->label == VDECL)
     {
-        /*
-        ids* ids = tree->left->atr->idList;
-        while (ids != NULL) {
-            idNode = newNode(tree->left->atr->value, tree->left->atr->line, tree->left->atr->type, tree->left->atr->label, ids->idName, NULL,NULL);
-            symbolTable* st = newTableOfSymbols(idNode);
-            tree->st = st;
-            tope = addLast(st, tope);
-            ids = ids->next;
-        }
-        */
         instru = newInstruction(IC_LOAD, NULL, NULL, tree->left->atr);
         node = newThreeDirElement(instru);
         insertLast(node);
@@ -553,6 +544,7 @@ void insertStms(tree* tree) {
     if (tree->atr->label == MDECL && tree->right->atr->label != EXT)
     {
         instru = newInstruction(IC_BEGIN_FUNCTION, NULL, NULL, NULL);
+        offset = 7;
         node = newThreeDirElement(instru);
         insertLast(node);
         checkOperator(tree);
@@ -672,13 +664,36 @@ void checkOperator(tree* tree) {
     
 }
 
-/*
-int isEquals(listThreeDir* node1, listThreeDir* node2){
-    int equalsLabels = node1->node->name == node2->node->name;
-    int equalsop1 = (node1->node->op1 == NULL && node2->node->op1 == NULL) || !(node1->node->op1 == NULL && node2->node->op1 != NULL) && !(node1->node->op1 != NULL && node2->node->op1 == NULL) && (node1->node->op1->value == node2->node->op1->value && node1->node->op1->line == node2->node->op1->line && node1->node->op1->type == node2->node->op1->type && node1->node->op1->label == node2->node->op1->label && node1->node->op1->text == node2->node->op1->text);
-    int equalsop2 = (node1->node->op2 == NULL && node2->node->op2 == NULL) || !(node1->node->op2 != NULL && node2->node->op2 == NULL) && !(node1->node->op2 != NULL && node2->node->op2 == NULL) && (node1->node->op2->value == node2->node->op2->value && node1->node->op2->line == node2->node->op2->line && node1->node->op2->type == node2->node->op2->type && node1->node->op2->label == node2->node->op2->label && node1->node->op2->text == node2->node->op2->text);
-    int equalres = (node1->node->resu == NULL && node2->node->resu == NULL) || !(node1->node->resu == NULL && node2->node->resu != NULL) && !(node1->node->resu != NULL && node2->node->resu == NULL) && (node1->node->resu->value == node2->node->resu->value && node1->node->resu->line == node2->node->resu->line && node1->node->resu->type == node2->node->resu->type && node1->node->resu->label == node2->node->resu->label && node1->node->resu->text == node2->node->resu->text);
-    return equalsLabels && equalsop1 && equalsop2 && equalres;
-}
+void createAssembly() {
+    if(threeDirList==NULL)
+        return;
+    FILE * fp;
 
-*/
+    fp = fopen ("assembly.s", "w+");
+    
+    while (threeDirList != NULL)
+    {
+        if (threeDirList->node->name == STMTASSIGN)
+        {
+            fprintf(fp, "%s   %s, %s\n", "mov", threeDirList->node->op1->text, threeDirList->node->resu->text);
+        }
+        if (threeDirList->node->name == SUMA)
+        {
+            //fprintf(fp, "%s   %s, %s\n", "mov", threeDirList->node->op1->text, "T0");
+            if (threeDirList->node->op1->label == CONST)
+            {
+                fprintf(fp, "%s   %d, %s\n", "add", threeDirList->node->op1->value, threeDirList->node->op2->text);
+            }
+            else {
+                fprintf(fp, "%s   %s, %s\n", "add", threeDirList->node->op1->text, threeDirList->node->op2->text);
+            }
+            fprintf(fp, "%s   %s, %s\n", "mov", threeDirList->node->op1->text, "T0");
+            
+            
+            
+        }        
+        threeDirList = threeDirList->next;
+    }
+
+    fclose(fp);
+} 

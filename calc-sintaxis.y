@@ -36,7 +36,7 @@ int yyerror(char *);
 %%
 
 prog: PROGRAM '{' variables methods '}'  { 
-                                                node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root, $3, $4); 
                                                 printTree($$,0);
                                                 createLevelOfSymbolTable($$);
@@ -45,7 +45,7 @@ prog: PROGRAM '{' variables methods '}'  {
                                                 printInstructions();
                                         };
        | PROGRAM '{' methods '}'          { 
-                                                node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root, NULL, $3); 
                                                 printTree($$,0);
                                                 createLevelOfSymbolTable($$);
@@ -57,7 +57,7 @@ prog: PROGRAM '{' variables methods '}'  {
 
                                         };      
        | PROGRAM '{' variables '}'      { 
-                                                node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root, $3, NULL); 
                                                 //printTree($$,0);
                                                 createLevelOfSymbolTable($$);
@@ -67,7 +67,7 @@ prog: PROGRAM '{' variables methods '}'  {
 
                                         };
        | PROGRAM '{' '}'                { 
-                                                node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root, NULL, NULL); 
                                                 //printTree($$,0);
                                                 createLevelOfSymbolTable($$);
@@ -78,7 +78,7 @@ prog: PROGRAM '{' variables methods '}'  {
 ;  
 
 variables: variables v_declaration      {
-                                                node* root = newNode(0, yylineno, None, SEMICOLON, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, SEMICOLON, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root, $1, $2); 
                                         }
          | v_declaration                {
@@ -87,8 +87,8 @@ variables: variables v_declaration      {
 ;
 
 v_declaration: type ides ';'   {
-                                        node* root = newNode(0, yylineno, None, VDECL, NULL, NULL, NULL);
-                                        node* sonL = newNode(0, yylineno, $1, NONE, NULL, $2,NULL);
+                                        node* root = newNode(0, yylineno, None, VDECL, NULL, NULL, NULL, 0);
+                                        node* sonL = newNode(0, yylineno, $1, NONE, NULL, $2,NULL, 0);
                                         tree* newTL = newTree(sonL, NULL, NULL);
                                         $$ = newTree(root, newTL, NULL);
                                 }
@@ -103,7 +103,7 @@ ides: ID ',' ides   {
 ;
 
 methods: methods m_declaration  {
-                                        node* root = newNode(0, yylineno, None, SEMICOLON, NULL, NULL, NULL);
+                                        node* root = newNode(0, yylineno, None, SEMICOLON, NULL, NULL, NULL, 0);
                                         $$ = newTree(root, $1, $2); 
                                 }
         | m_declaration         {
@@ -112,25 +112,25 @@ methods: methods m_declaration  {
 ;
 
 m_declaration: method_type '(' typeides ')' m_declaration_final {
-                                                                        node* root = newNode(0, yylineno, None, MDECL, NULL, NULL, NULL);
-                                                                        node* left = newNode(0, yylineno, None, MDECLTYPE, NULL, NULL, NULL);
+                                                                        node* root = newNode(0, yylineno, None, MDECL, NULL, NULL, NULL, 0);
+                                                                        node* left = newNode(0, yylineno, None, MDECLTYPE, NULL, NULL, NULL, 0);
                                                                         tree* leftTree = newTree(left, $1, $3);
                                                                         $$ = newTree(root, leftTree, $5);
                                                                 }
            | method_type '(' ')' m_declaration_final            {
-                                                                        node* root = newNode(0, yylineno, None, MDECL, NULL, NULL, NULL);
-                                                                        node* left = newNode(0, yylineno, None, MDECLTYPE, NULL, NULL, NULL);
+                                                                        node* root = newNode(0, yylineno, None, MDECL, NULL, NULL, NULL, 0);
+                                                                        node* left = newNode(0, yylineno, None, MDECLTYPE, NULL, NULL, NULL, 0);
                                                                         tree* leftTree = newTree(left, $1, NULL);
                                                                         $$ = newTree(root, leftTree, $4);
                                                                 }
 ;
 
 method_type: type ID    {
-                                node* root = newNode(0, yylineno, $1, NONE, $2,NULL,NULL);
+                                node* root = newNode(0, yylineno, $1, NONE, $2,NULL,NULL, 0);
                                 $$ = newTree(root, NULL, NULL);
                         }
             | VOID ID   {
-                                node* root = newNode(0, yylineno, Void, NONE, $2,NULL,NULL);
+                                node* root = newNode(0, yylineno, Void, NONE, $2,NULL,NULL, 0);
                                 $$ = newTree(root, NULL, NULL);
                         }
 ;
@@ -139,43 +139,43 @@ m_declaration_final: block      {
                                         $$ = $1;
                                 }
                  | EXTERN ';'   {
-                                        node* root = newNode(0, yylineno, None, EXT, NULL, NULL, NULL);
+                                        node* root = newNode(0, yylineno, None, EXT, NULL, NULL, NULL, 0);
                                         $$ = newTree(root,NULL,NULL);
                                 }
 ;
 
 typeides: type ID ',' typeides {    
-                                    node* left = newNode(0, yylineno, $1, PARAM, $2, NULL,NULL);
+                                    node* left = newNode(0, yylineno, $1, PARAM, $2, NULL,NULL, 0);
                                     tree* leftTree = newTree(left, NULL, NULL);
-                                    node* root = newNode(0, yylineno, None, COMMA, NULL, NULL, NULL);
+                                    node* root = newNode(0, yylineno, None, COMMA, NULL, NULL, NULL, 0);
                                     $$ = newTree(root, leftTree, $4);  
                                } 
         | type ID      {
-                                node* root = newNode(0, yylineno, $1, PARAM, $2, NULL,NULL);
+                                node* root = newNode(0, yylineno, $1, PARAM, $2, NULL,NULL, 0);
                                 $$ = newTree(root,NULL,NULL);
                        }
 ;
 
 block: '{' variables statements '}'     {
-                                                node* root = newNode(0, yylineno, None, BLOCKDECL, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, BLOCKDECL, NULL, NULL, NULL, 0);
                                                 $$= newTree(root,$2,$3);
                                         }       
         | '{' statements '}'            {
-                                                node* root = newNode(0, yylineno, None, BLOCKDECL, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, BLOCKDECL, NULL, NULL, NULL, 0);
                                                 $$= newTree(root,NULL,$2);
                                         } 
         | '{' variables '}'             {
-                                                node* root = newNode(0, yylineno, None, BLOCKDECL, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, BLOCKDECL, NULL, NULL, NULL, 0);
                                                 $$= newTree(root,$2,NULL);
                                         } 
         | '{' '}'       {
-                                node* root = newNode(0, yylineno, None, NONEBLOCK, NULL, NULL, NULL);
+                                node* root = newNode(0, yylineno, None, NONEBLOCK, NULL, NULL, NULL, 0);
                                 $$ = newTree(root,NULL,NULL);   
                         }
 ;
 
 statements: statement statements        { 
-                                                node* root = newNode(0, yylineno, None, STMT, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, STMT, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root, $1, $2);
                                         }
           | statement   { 
@@ -192,8 +192,8 @@ type: INTEGER   {
 ;
 
 statement: ID '=' expression ';'        {
-                                                node* root = newNode(0, yylineno, None, STMTASSIGN, NULL, NULL, NULL);
-                                                node* leftRoot = newNode(0, yylineno, None, VAR, $1, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, STMTASSIGN, NULL, NULL, NULL, 0);
+                                                node* leftRoot = newNode(0, yylineno, None, VAR, $1, NULL, NULL, 0);
                                                 tree* leftTree = newTree(leftRoot, NULL, NULL);
                                                 $$ = newTree(root, leftTree, $3);   
                                         }
@@ -204,7 +204,7 @@ statement: ID '=' expression ';'        {
                                                 $$ = $1;
                                         }
          | WHILE expression block       {
-                                                node* root = newNode(0, yylineno, None, STMTWHILE, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, STMTWHILE, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root,$2, $3); 
                                         }
          | return_stmt                  {
@@ -214,49 +214,49 @@ statement: ID '=' expression ';'        {
                                                 $$ = $1;
                                         }
          | ';'                          {
-                                                node* root = newNode(0, yylineno, None, SEMICOLON, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, SEMICOLON, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root, NULL, NULL); 
                                         }
 ;
 
 return_stmt: RETURN expression ';' {
-                                        node* root = newNode(0, yylineno, None, RET, NULL, NULL, NULL);
+                                        node* root = newNode(0, yylineno, None, RET, NULL, NULL, NULL, 0);
                                         $$ = newTree(root, NULL, $2);    
                                 }
            | RETURN ';'         {
-                                        node* root = newNode(0, yylineno, None, RET, NULL, NULL, NULL);
+                                        node* root = newNode(0, yylineno, None, RET, NULL, NULL, NULL, 0);
                                         $$ = newTree(root, NULL, NULL);    
                                 }
 ;
 
 if_stmt: IF '(' expression ')' THEN block               {
-                                                                node* root = newNode(0, yylineno, None, IFTHEN, NULL, NULL, NULL);
+                                                                node* root = newNode(0, yylineno, None, IFTHEN, NULL, NULL, NULL, 0);
                                                                 $$ = newTree(root,$3,$6);
                                                         }
        | IF '(' expression ')' THEN block ELSE block    {
-                                                                node* root = newNode(0, yylineno, None, IFTELSE, NULL, NULL, NULL);
-                                                                node* leftRoot = newNode(0, yylineno, None, IFTHEN, NULL, NULL, NULL);
+                                                                node* root = newNode(0, yylineno, None, IFTELSE, NULL, NULL, NULL, 0);
+                                                                node* leftRoot = newNode(0, yylineno, None, IFTHEN, NULL, NULL, NULL, 0);
                                                                 tree* leftTree = newTree(leftRoot, $3, $6);
                                                                 $$ = newTree(root,leftTree,$8);
                                                         }
 ;
 
 method_call: ID '(' expressions ')'     {
-                                                node* root = newNode(0, yylineno, None, MCALL, NULL, NULL, NULL);
-                                                node* leftRoot = newNode(0, yylineno, None, NONE, $1, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, MCALL, NULL, NULL, NULL, 0);
+                                                node* leftRoot = newNode(0, yylineno, None, NONE, $1, NULL, NULL, 0);
                                                 tree* leftTree = newTree(leftRoot, NULL, NULL);
                                                 $$ = newTree(root,leftTree,$3);
                                         }
            | ID '(' ')'                 {
-                                                node* root = newNode(0, yylineno, None, MCALL, NULL, NULL, NULL);
-                                                node* leftRoot = newNode(0, yylineno, None, NONE, $1, NULL,NULL);
+                                                node* root = newNode(0, yylineno, None, MCALL, NULL, NULL, NULL, 0);
+                                                node* leftRoot = newNode(0, yylineno, None, NONE, $1, NULL,NULL, 0);
                                                 tree* leftTree = newTree(leftRoot,NULL, NULL);
                                                 $$ = newTree(root,leftTree, NULL);
                                         }
 ;
 
 expressions: expressions ',' expression         {
-                                                        node* root = newNode(0, yylineno, None, COMMA, NULL, NULL, NULL);
+                                                        node* root = newNode(0, yylineno, None, COMMA, NULL, NULL, NULL, 0);
                                                         $$ = newTree(root,$1,$3);
                                                 }
      | expression                               {
@@ -265,7 +265,7 @@ expressions: expressions ',' expression         {
 ;
 
 expression:ID                                   { 
-                                                        node* root = newNode(0, yylineno, None, VAR, $1, NULL, NULL);
+                                                        node* root = newNode(0, yylineno, None, VAR, $1, NULL, NULL, 0);
                                                         $$ = newTree(root,NULL,NULL);      
                                                 }
         | method_call                           {
@@ -278,11 +278,11 @@ expression:ID                                   {
                                                         $$ = $1;
                                                 }
         | TMINUS expression %prec UNARY         {
-                                                        node* root = newNode(0, yylineno, None, NEGATIVEEXP, NULL,NULL,NULL);
+                                                        node* root = newNode(0, yylineno, None, NEGATIVEEXP, NULL,NULL,NULL, 0);
                                                         $$ = newTree(root, NULL, $2);
                                                 }
         | TNOT expression %prec UNARY           {
-                                                        node* root = newNode(0, yylineno, None, NOTEXP, NULL,NULL,NULL);
+                                                        node* root = newNode(0, yylineno, None, NOTEXP, NULL,NULL,NULL, 0);
                                                         $$ = newTree(root, NULL, $2);
                                                 }
         | '(' expression ')'                    { 
@@ -291,57 +291,57 @@ expression:ID                                   {
 ;
 
 expr_bin: expression TPLUS expression   { 
-                                                node* root = newNode(0, yylineno, None, SUMA, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, SUMA, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root,$1,$3);      
                                         }
         | expression TMINUS expression  { 
-                                                node* root = newNode(0, yylineno, None, RESTA, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, RESTA, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root,$1,$3);      
                                         }
         | expression  TMULT expression  { 
-                                                node* root = newNode(0, yylineno, None, MULTIPLICACION, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, MULTIPLICACION, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root,$1,$3);      
                                         }
         | expression  TDIV expression   { 
-                                                node* root = newNode(0, yylineno, None, DIVISION, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, DIVISION, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root,$1,$3);      
                                         }
         | expression  TMOD expression   { 
-                                                node* root = newNode(0, yylineno, None, LMOD, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, LMOD, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root,$1,$3);      
                                         }
         | expression LOWER expression   { 
-                                                node* root = newNode(0, yylineno, None, MENOR, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, MENOR, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root,$1,$3);      
                                         }
         | expression  HIGHER expression { 
-                                                node* root = newNode(0, yylineno, None, MAYOR, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, MAYOR, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root,$1,$3);      
                                         }
         | expression  EQUAL expression  { 
-                                                node* root = newNode(0, yylineno, None, LEQUAL, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, LEQUAL, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root,$1,$3);      
                                         }
         | expression  TAND expression    { 
-                                                node* root = newNode(0, yylineno, None, LAND, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, LAND, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root,$1,$3);      
                                         }
         | expression TOR expression      { 
-                                                node* root = newNode(0, yylineno, None, LOR, NULL, NULL, NULL);
+                                                node* root = newNode(0, yylineno, None, LOR, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root,$1,$3);      
                                         }
         ;
 
 literal: INT    {
-                        node* root = newNode($1, 0, Int, CONST, NULL, NULL, NULL); 
+                        node* root = newNode($1, 0, Int, CONST, NULL, NULL, NULL, 0); 
                         $$ = newTree(root,NULL, NULL);
                 }
        | BTRUE  {
-                        node* root = newNode(1, 0, Bool, CONST, NULL, NULL, NULL); 
+                        node* root = newNode(1, 0, Bool, CONST, NULL, NULL, NULL, 0); 
                         $$ = newTree(root, NULL, NULL);
                 }
        | BFALSE {
-                        node* root = newNode(0, 0, Bool, CONST, NULL, NULL, NULL); 
+                        node* root = newNode(0, 0, Bool, CONST, NULL, NULL, NULL, 0); 
                         $$ = newTree(root, NULL, NULL);
                 }
 ;

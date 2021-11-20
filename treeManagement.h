@@ -21,6 +21,7 @@ typedef struct infoNode {
     char* text;
     ids* idList;
     params* paramList;
+    int offset;
 } node;
 
 //struct that defines a symbols table
@@ -73,7 +74,7 @@ char* getLabel(enum TLabel label);
 //method that create a new tree
 tree* newTree(node* newatr, tree *newleft, tree *newright);
 
-node* newNode(int value,int line, enum TType type, enum TLabel label, char* text, ids* idList, params* paramList);
+node* newNode(int value,int line, enum TType type, enum TLabel label, char* text, ids* idList, params* paramList, int offset);
 
 //as the concatenation gave us a lot of problems, we finally decided to use this option that we found in
 //https://es.stackoverflow.com/questions/146607/c%C3%B3mo-concatenar-cadenas-de-car%C3%A1cteres-sin-usar-la-funci%C3%B3n-strcat
@@ -140,5 +141,7 @@ void printInstructions();
 void insertDecl(tree* tree);
 
 void insertStms(tree* tree);
+
+void createAssembly();
 
 int isEquals(listThreeDir* node1, listThreeDir* node2);

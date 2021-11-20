@@ -11,16 +11,35 @@ void main()  extern ;
 void print_int(integer i)
 {
 bool p;
-integer y, bv, z, asdasdasd;
-integer x,w;
+integer y;
+integer bv;
+integer z;
+integer x;
 y = get_int();
-z = -z;
+z = z - z - z;
+x = bv;
 if (!p) then
 {
 x = x + 1 + 2;
 }
-
 return print_int(inc(y));
-
 }
+
+void print_int2(integer i)
+{
+bool p;
+integer y;
+integer bv;
+integer z;
+integer x;
+y = get_int();
+z = z - z - z;
+x = bv;
+if (!p) then
+{
+x = x + 1 + 2;
+}
+return print_int(inc(y));
+}
+
 }
