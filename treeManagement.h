@@ -145,3 +145,5 @@ void insertStms(tree* tree);
 void createAssembly();
 
 int isEquals(listThreeDir* node1, listThreeDir* node2);
+
+void sizing(listThreeDir* list);

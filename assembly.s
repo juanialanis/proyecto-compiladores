@@ -1,20 +1,12 @@
-add   x, (null)
-mov   x, T0
-add   (null), (null)
-mov   (null), T0
-mov   get_int, y
-mov   (null), z
-mov   bv, x
-mov   (null), x
-add   x, (null)
-mov   x, T0
-add   (null), (null)
-mov   (null), T0
-mov   get_int, y
-mov   (null), z
-mov   bv, x
-mov   (null), x
-add   x, (null)
-mov   x, T0
-add   (null), (null)
-mov   (null), T0
+  .file   'nombreArchivo.c'
+  .text
+  .globl	main
+  .type   main, @function
+main:
+  pushq  %rbp
+  movq  %rsp  %rbp
+  movl  $0, -8(%rbp)
+  movl  $1  -24(%rbp)
+  addl  $5  -24(%rbp)
+  movl  -24(%rbp), -8(%rbp)
+  .size main, .-main

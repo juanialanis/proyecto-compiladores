@@ -1,0 +1,9 @@
+Program {
+  integer main(){
+    integer x;
+    integer y;
+    x = 0;
+    x = 1 + 5;
+    return x;
+  }
+}

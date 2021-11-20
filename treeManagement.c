@@ -147,6 +147,7 @@ void printTree(tree* tree, int space) {
 } 
 
 void printInstructions() {
+    sizing(threeDirList);
     if(threeDirList==NULL)
         return;
     listThreeDir* threeDirListAux = threeDirList;
@@ -534,6 +535,7 @@ void insertDecl(tree* tree) {
     insertDecl(tree->right);
 
 }
+
 void insertStms(tree* tree) {
     if (tree == NULL) return; 
 
@@ -543,18 +545,16 @@ void insertStms(tree* tree) {
     listThreeDir* node = NULL;
     if (tree->atr->label == MDECL && tree->right->atr->label != EXT)
     {
-        instru = newInstruction(IC_BEGIN_FUNCTION, NULL, NULL, NULL);
-        offset = 7;
+        instru = newInstruction(IC_BEGIN_FUNCTION, NULL, NULL, tree->left->left->atr);
         node = newThreeDirElement(instru);
         insertLast(node);
         checkOperator(tree);
-        instru = newInstruction(IC_END_FUNCTION, NULL, NULL, NULL);
+        instru = newInstruction(IC_END_FUNCTION, NULL, NULL, tree->left->left->atr);
         node = newThreeDirElement(instru);
         insertLast(node);
     }    
     insertStms(tree->right);
 }
-
 
 void checkOperator(tree* tree) {
     if (tree == NULL) return; 
@@ -637,6 +637,7 @@ void checkOperator(tree* tree) {
             instru = newInstruction(tree->atr->label, op1,op2, result);
             listThreeDir* node = newThreeDirElement(instru);
             insertLast(node);
+            checkOperator(tree->right);
         } 
         else if ( tree->atr->label == STMTASSIGN ) 
         {
@@ -644,22 +645,25 @@ void checkOperator(tree* tree) {
             result = (tree->left->st != NULL) ? tree->left->st->cSymbol : tree->left->atr;
             instru = newInstruction(tree->atr->label, op1,op2, result);
             listThreeDir* node = newThreeDirElement(instru);
+            checkOperator(tree->right);
             insertLast(node);
-
         } 
         else if (tree->atr->label == VDECL)
         {
             instru = newInstruction(IC_LOAD, NULL, NULL, tree->left->atr);
             node = newThreeDirElement(instru);
             insertLast(node);
+            checkOperator(tree->right);
         }
         else if (tree->atr->label == NOTEXP || tree->atr->label == NEGATIVEEXP || tree->atr->label == RET)
         {
             instru = newInstruction(tree->atr->label, NULL, NULL, tree->right->atr);
             node = newThreeDirElement(instru);
             insertLast(node);
+            checkOperator(tree->right);
+        } else {
+            checkOperator(tree->right);
         }
-        checkOperator(tree->right);
     }
     
 }
@@ -670,30 +674,66 @@ void createAssembly() {
     FILE * fp;
 
     fp = fopen ("assembly.s", "w+");
+    fprintf(fp, "  .file   'nombreArchivo.c'\n  .text\n");
     
     while (threeDirList != NULL)
     {
+        int functionOffsett;
+        if (threeDirList->node->name == IC_BEGIN_FUNCTION){
+            fprintf(fp, "  .globl	%s\n  .type   %s, @function\nmain:\n  pushq  %crbp\n  movq  %crsp  %crbp\n", threeDirList->node->resu->text,  threeDirList->node->resu->text, '%','%','%');
+            functionOffsett = threeDirList->node->resu->offset;
+        }
+        if (threeDirList->node->name == IC_END_FUNCTION){
+            fprintf(fp, "  .size %s, .-%s\n",  threeDirList->node->resu->text,  threeDirList->node->resu->text);
+        }
         if (threeDirList->node->name == STMTASSIGN)
-        {
-            fprintf(fp, "%s   %s, %s\n", "mov", threeDirList->node->op1->text, threeDirList->node->resu->text);
+        {   
+            if (threeDirList->node->op1->label == CONST){
+                fprintf(fp, "  movl  $%d, -%d(%crbp)\n",  threeDirList->node->op1->value, threeDirList->node->resu->offset,'%');
+            } else {
+                fprintf(fp, "  movl  -%d(%crbp), -%d(%crbp)\n",  threeDirList->node->op1->offset,'%', threeDirList->node->resu->offset,'%');
+            }
         }
         if (threeDirList->node->name == SUMA)
         {
-            //fprintf(fp, "%s   %s, %s\n", "mov", threeDirList->node->op1->text, "T0");
-            if (threeDirList->node->op1->label == CONST)
+            threeDirList->node->resu->offset = functionOffsett + 8;
+            if (threeDirList->node->op1->label == CONST && threeDirList->node->op2->offset != 0) // En la suma mover ambos a un temporal
             {
-                fprintf(fp, "%s   %d, %s\n", "add", threeDirList->node->op1->value, threeDirList->node->op2->text);
+                fprintf(fp, "  movl  -%d(%crbp)  -%d(%crbp)\n", threeDirList->node->op2->value, '%', threeDirList->node->resu->offset, '%');
+                fprintf(fp, "  addl  $%d  -%d(%crbp)\n", threeDirList->node->op1->value, threeDirList->node->resu->offset, '%');
+            } else if (threeDirList->node->op1->offset != 0 && threeDirList->node->op2->label == CONST){
+                fprintf(fp, "  movl  -%d(%crbp)  -%d(%crbp)\n", threeDirList->node->op1->offset, '%', threeDirList->node->resu->offset, '%');
+                fprintf(fp, "  addl  $%d  -%d(%crbp)\n", threeDirList->node->op2->value, threeDirList->node->resu->offset, '%');
+            } else if (threeDirList->node->op1->offset != 0 && threeDirList->node->op2->offset != 0){
+                fprintf(fp, "  movl  -%d(%crbp)  -%d(%crbp)\n", threeDirList->node->op1->offset, '%', threeDirList->node->resu->offset, '%');
+                fprintf(fp, "  addl  -%d(%crbp)  -%d(%crbp)\n", threeDirList->node->op2->offset, '%', threeDirList->node->resu->offset, '%');
+            } else if (threeDirList->node->op1->offset == 0 && threeDirList->node->op2->offset == 0){
+                fprintf(fp, "  movl  $%d  -%d(%crbp)\n", threeDirList->node->op1->value, threeDirList->node->resu->offset, '%');
+                fprintf(fp, "  addl  $%d  -%d(%crbp)\n", threeDirList->node->op2->value, threeDirList->node->resu->offset, '%');
             }
-            else {
-                fprintf(fp, "%s   %s, %s\n", "add", threeDirList->node->op1->text, threeDirList->node->op2->text);
-            }
-            fprintf(fp, "%s   %s, %s\n", "mov", threeDirList->node->op1->text, "T0");
-            
-            
-            
         }        
         threeDirList = threeDirList->next;
     }
 
     fclose(fp);
 } 
+
+void sizing(listThreeDir* list) {
+    if (list == NULL) return; 
+    listThreeDir* pointer = list;
+    threeDir* node = NULL; 
+    while(pointer != NULL){
+        if (pointer->node->name == IC_BEGIN_FUNCTION){
+            node = pointer->node;
+            offset = 0;
+        }
+        if (pointer->node->name == IC_LOAD){
+            offset += 8;
+        }
+        if (pointer->node->name == IC_END_FUNCTION){
+            node->resu->offset = offset;
+            node = NULL;
+        }
+        pointer = pointer->next;
+    }
+}
