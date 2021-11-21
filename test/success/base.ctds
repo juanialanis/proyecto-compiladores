@@ -1,9 +1,14 @@
 Program {
   integer main(){
-    integer x;
+    bool x;
     integer y;
-    x = 0;
-    x = 1 + 5;
-    return x;
+    integer z;
+    y = 1;
+    z = 2;
+    if ( y > z) then{
+      x = true;
+    } else {
+      x = false;
+    }
   }
 }
