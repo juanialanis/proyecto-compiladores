@@ -1,14 +1,15 @@
 Program {
+  integer algo(integer x, integer y) extern;
+
   integer main(){
     bool x;
     integer y;
     integer z;
     y = 1;
     z = 2;
-    if ( y > z) then{
-      x = true;
-    } else {
-      x = false;
-    }
+    algo(z,y);
+    z = 2;
+    z = 2;
+    z = 2;
   }
 }
