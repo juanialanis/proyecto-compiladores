@@ -746,17 +746,14 @@ void createAssembly() {
             if (threeDirList->node->op1->label == CONST && threeDirList->node->op2->offset != 0) 
             {
                 fprintf(fp, "  movl  -%d(%crbp),  %ceax\n", threeDirList->node->op2->offset, '%', '%');
-                fprintf(fp, "  movl  %ceax,  -%d(%crbp)\n", '%', threeDirList->node->resu->offset, '%');
                 fprintf(fp, "  addl  $%d,  -%d(%crbp)\n", threeDirList->node->op1->value, threeDirList->node->resu->offset, '%');
             } else if (threeDirList->node->op1->offset != 0 && threeDirList->node->op2->label == CONST){
                 fprintf(fp, "  movl  -%d(%crbp),  %ceax\n", threeDirList->node->op1->offset, '%', '%');
-                fprintf(fp, "  movl  %ceax,  -%d(%crbp)\n", '%', threeDirList->node->resu->offset, '%');
                 fprintf(fp, "  addl  $%d,  -%d(%crbp)\n", threeDirList->node->op2->value, threeDirList->node->resu->offset, '%');
             } else if (threeDirList->node->op1->offset != 0 && threeDirList->node->op2->offset != 0){
                 fprintf(fp, "  movl  -%d(%crbp),  %ceax\n", threeDirList->node->op1->offset, '%', '%');
-                fprintf(fp, "  movl  %ceax,  -%d(%crbp)\n", '%', threeDirList->node->resu->offset, '%');
                 fprintf(fp, "  addl  -%d(%crbp),  %ceax\n", threeDirList->node->op2->offset, '%', '%');
-                fprintf(fp, "  addl  %ceax,  -%d(%crbp)\n", '%', threeDirList->node->resu->offset, '%');
+                fprintf(fp, "  movl  %ceax,  -%d(%crbp)\n", '%', threeDirList->node->resu->offset, '%');
             } else if (threeDirList->node->op1->offset == 0 && threeDirList->node->op2->offset == 0){
                 fprintf(fp, "  movl  $%d,  -%d(%crbp)\n", threeDirList->node->op1->value, threeDirList->node->resu->offset, '%');
                 fprintf(fp, "  addl  $%d,  -%d(%crbp)\n", threeDirList->node->op2->value, threeDirList->node->resu->offset, '%');
