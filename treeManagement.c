@@ -680,14 +680,23 @@ void checkOperator(tree* tree) {
             insertLast(node);
             checkOperator(tree->right);
         }
-        else if (tree->atr->label == NOTEXP || tree->atr->label == NEGATIVEEXP || tree->atr->label == RET)
+        else if (tree->atr->label == NOTEXP || tree->atr->label == NEGATIVEEXP)
+        {
+            op1 = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
+            result = (tree->st != NULL) ? tree->st->cSymbol : tree->atr;
+            instru = newInstruction(tree->atr->label, op1, NULL, result);
+            node = newThreeDirElement(instru);
+            insertLast(node);
+            checkOperator(tree->right);
+        } 
+        else if (tree->atr->label == RET)
         {
             result = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
             instru = newInstruction(tree->atr->label, NULL, NULL, result);
             node = newThreeDirElement(instru);
             insertLast(node);
             checkOperator(tree->right);
-        } 
+        }
         else if (tree->atr->label == MCALL)
         {
             result = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
@@ -708,16 +717,17 @@ void createAssembly() {
     FILE * fp;
 
     fp = fopen ("assembly.s", "w+");
-    fprintf(fp, "  .file   'nombreArchivo.c'\n  .text\n");
+    fprintf(fp, "  .file   %cnombreArchivo.c%c\n  .text\n", '"', '"');
     
     while (threeDirList != NULL)
     {
         int functionOffset;
         if (threeDirList->node->name == IC_BEGIN_FUNCTION){
-            fprintf(fp, "  .globl	%s\n  .type   %s, @function\nmain:\n  pushq  %crbp\n  movq  %crsp  %crbp\n", threeDirList->node->resu->text,  threeDirList->node->resu->text, '%','%','%');
             functionOffset = threeDirList->node->resu->offset;
+            fprintf(fp, "  .globl	%s\n  .type   %s, @function\n%s:\n  pushq  %crbp\n  movq  %crsp,  %crbp\n  subq $%d,  %crsp\n", threeDirList->node->resu->text,  threeDirList->node->resu->text, threeDirList->node->resu->text, '%','%','%', functionOffset, '%');
         }
         else if (threeDirList->node->name == IC_END_FUNCTION){
+            fprintf(fp, "  leave\n  ret\n");
             fprintf(fp, "  .size %s, .-%s\n",  threeDirList->node->resu->text,  threeDirList->node->resu->text);
         }
         else if (threeDirList->node->name == STMTASSIGN)
@@ -725,7 +735,8 @@ void createAssembly() {
             if (threeDirList->node->op1->label == CONST){
                 fprintf(fp, "  movl  $%d, -%d(%crbp)\n",  threeDirList->node->op1->value, threeDirList->node->resu->offset,'%');
             } else {
-                fprintf(fp, "  movl  -%d(%crbp), -%d(%crbp)\n",  threeDirList->node->op1->offset,'%', threeDirList->node->resu->offset,'%');
+                fprintf(fp, "  movl  -%d(%crbp), %ceax\n",  threeDirList->node->op1->offset,'%','%');
+                fprintf(fp, "  movl  %ceax, -%d(%crbp)\n", '%', threeDirList->node->resu->offset,'%');
             }
         }
         else if (threeDirList->node->name == SUMA)
@@ -734,14 +745,18 @@ void createAssembly() {
             threeDirList->node->resu->offset = functionOffset;
             if (threeDirList->node->op1->label == CONST && threeDirList->node->op2->offset != 0) 
             {
-                fprintf(fp, "  movl  -%d(%crbp),  -%d(%crbp)\n", threeDirList->node->op2->offset, '%', threeDirList->node->resu->offset, '%');
+                fprintf(fp, "  movl  -%d(%crbp),  %ceax\n", threeDirList->node->op2->offset, '%', '%');
+                fprintf(fp, "  movl  %ceax,  -%d(%crbp)\n", '%', threeDirList->node->resu->offset, '%');
                 fprintf(fp, "  addl  $%d,  -%d(%crbp)\n", threeDirList->node->op1->value, threeDirList->node->resu->offset, '%');
             } else if (threeDirList->node->op1->offset != 0 && threeDirList->node->op2->label == CONST){
-                fprintf(fp, "  movl  -%d(%crbp),  -%d(%crbp)\n", threeDirList->node->op1->offset, '%', threeDirList->node->resu->offset, '%');
+                fprintf(fp, "  movl  -%d(%crbp),  %ceax\n", threeDirList->node->op1->offset, '%', '%');
+                fprintf(fp, "  movl  %ceax,  -%d(%crbp)\n", '%', threeDirList->node->resu->offset, '%');
                 fprintf(fp, "  addl  $%d,  -%d(%crbp)\n", threeDirList->node->op2->value, threeDirList->node->resu->offset, '%');
             } else if (threeDirList->node->op1->offset != 0 && threeDirList->node->op2->offset != 0){
-                fprintf(fp, "  movl  -%d(%crbp),  -%d(%crbp)\n", threeDirList->node->op1->offset, '%', threeDirList->node->resu->offset, '%');
-                fprintf(fp, "  addl  -%d(%crbp),  -%d(%crbp)\n", threeDirList->node->op2->offset, '%', threeDirList->node->resu->offset, '%');
+                fprintf(fp, "  movl  -%d(%crbp),  %ceax\n", threeDirList->node->op1->offset, '%', '%');
+                fprintf(fp, "  movl  %ceax,  -%d(%crbp)\n", '%', threeDirList->node->resu->offset, '%');
+                fprintf(fp, "  addl  -%d(%crbp),  %ceax\n", threeDirList->node->op2->offset, '%', '%');
+                fprintf(fp, "  addl  %ceax,  -%d(%crbp)\n", '%', threeDirList->node->resu->offset, '%');
             } else if (threeDirList->node->op1->offset == 0 && threeDirList->node->op2->offset == 0){
                 fprintf(fp, "  movl  $%d,  -%d(%crbp)\n", threeDirList->node->op1->value, threeDirList->node->resu->offset, '%');
                 fprintf(fp, "  addl  $%d,  -%d(%crbp)\n", threeDirList->node->op2->value, threeDirList->node->resu->offset, '%');
@@ -784,6 +799,29 @@ void createAssembly() {
                 fprintf(fp, "  movl  $%d,  -%d(%crbp)\n", threeDirList->node->op1->value, threeDirList->node->resu->offset, '%');
                 fprintf(fp, "  imull  $%d,  -%d(%crbp)\n", threeDirList->node->op2->value, threeDirList->node->resu->offset, '%');
             }
+        }
+        else if (threeDirList->node->name == NEGATIVEEXP)
+        {
+            functionOffset += 8;
+            threeDirList->node->resu->offset = functionOffset;
+            fprintf(fp, "  movl -%d(%crbp), %ceax\n", threeDirList->node->op1->offset, '%', '%');
+            fprintf(fp, "  imull  $-1,  %ceax\n", '%');
+            fprintf(fp, "  movl %ceax,  -%d(%crbp)\n", '%', threeDirList->node->resu->offset, '%');
+        }
+        else if (threeDirList->node->name == NOTEXP)
+        {
+            functionOffset += 8;
+            threeDirList->node->resu->offset = functionOffset;
+            fprintf(fp, "  movl -%d(%crbp), %ceax\n", threeDirList->node->op1->offset, '%', '%');
+            fprintf(fp, "  cmp  $0,  %ceax\n", '%');
+            fprintf(fp, "  je  .L%d\n", label);
+            fprintf(fp, "  movl $0,  %ceax\n", '%');
+            fprintf(fp, "  jmp  .L%d\n", label+1);
+            fprintf(fp, "  .L%d\n", label);
+            fprintf(fp, "  movl $1,  -%ceax\n", '%');
+            fprintf(fp, "  movl %ceax,  -%d(%crbp)\n", '%', threeDirList->node->resu->offset, '%');
+            fprintf(fp, "  .L%d\n", label+1);
+            label += 2;
         }
         else if (threeDirList->node->name == DIVISION)
         {
