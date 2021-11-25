@@ -1,15 +1,17 @@
 Program {
-  integer algo(integer x, integer y) extern;
 
-  integer main(){
-    bool x;
+  integer sum(integer a, integer b, integer c){
+    return a + b + c;
+  }
+
+  void main() {
+    integer x;
     integer y;
     integer z;
+    x = 1;
     y = 1;
-    z = 2;
-    algo(z,y);
-    z = 2;
-    z = 2;
-    z = 2;
+    z = 1;
+    x = sum(x,y,1);
+    x = 5;
   }
 }

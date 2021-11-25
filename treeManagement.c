@@ -4,7 +4,7 @@
 #include "treeManagement.h"
 #define COUNT 15
 
-char* TLabelString[] = { "PARAM","VAR", "VDECL", "NONE", "NONEBLOCK", "BLOCKDECL", "IFTHEN", "IFTELSE", "MCALL" ,"MDECL", "MDECLTYPE", "EXT", "STMT","STMTASSIGN", "STMTWHILE", "SUMA", "MULTIPLICACION", "RESTA", "SEMICOLON", "DIVISION", "LAND", "LOR", "MAYOR","MENOR", "COMMA", "NEGATIVEEXP", "NOTEXP" ,"LMOD","LEQUAL","PROG", "RET", "CONST", "IC_BEGIN_FUNCTION", "IC_END_FUNCTION", "IC_LOAD", "LABEL", "JUMPFALSE", "JUMP"};
+char* TLabelString[] = { "PARAM","VAR", "VDECL", "NONE", "NONEBLOCK", "BLOCKDECL", "IFTHEN", "IFTELSE", "MCALL" ,"MDECL", "MDECLTYPE", "EXT", "STMT","STMTASSIGN", "STMTWHILE", "SUMA", "MULTIPLICACION", "RESTA", "SEMICOLON", "DIVISION", "LAND", "LOR", "MAYOR","MENOR", "COMMA", "NEGATIVEEXP", "NOTEXP" ,"LMOD","LEQUAL","PROG", "RET", "CONST", "IC_BEGIN_FUNCTION", "IC_END_FUNCTION", "IC_LOAD", "LABEL", "JUMPFALSE", "JUMP", "LOAD_PARAMS"};
 
 char* TTypeString[]  = {"None", "Int", "Bool", "Void" };
 
@@ -372,6 +372,15 @@ void createSubTableSymbol(tree* tree, symbolTable* tope) {
             ids = ids->next;
         }
     }
+    else if(tree->atr->label == PARAM) {
+        node* idNode;
+        tree->atr->offset = offset;
+        idNode = newNode(tree->atr->value, tree->atr->line, tree->atr->type, tree->atr->label, tree->atr->text, NULL,NULL, offset);
+        offset += 8;
+        symbolTable* st = newTableOfSymbols(idNode);
+        tree->st = st;
+        addLast(st, tope);
+    }
     else if (tree->atr->text != NULL) {
         symbolTable* st = newTableOfSymbols(tree->atr);
         tree->st = st;
@@ -597,7 +606,15 @@ void checkOperator(tree* tree) {
         node = newThreeDirElement(instru);
         insertLast(node);
         
-    } else if (tree->atr->label == IFTHEN)
+    }
+    else if (tree->atr->label == PARAM)
+    {
+        result = (tree->st != NULL) ? tree->st->cSymbol : tree->atr;
+        instru = newInstruction(PARAM, NULL, NULL, result);
+        node = newThreeDirElement(instru);
+        insertLast(node);
+    } 
+    else if (tree->atr->label == IFTHEN)
     {
         
         checkOperator(tree->left);
@@ -618,8 +635,27 @@ void checkOperator(tree* tree) {
         instru = newInstruction(LABEL, NULL, NULL, result);
         node = newThreeDirElement(instru);
         insertLast(node);
-
-    } else if (tree->atr->label == STMTWHILE)
+    }
+    else if (tree->atr->label == MCALL)
+    {
+        printf("aca lo rompo\n");
+        loading(tree->right);
+        printf("no rompio\n");
+        result = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
+        instru = newInstruction(tree->atr->label, NULL, NULL, result);
+        node = newThreeDirElement(instru);
+        insertLast(node);
+    } 
+    else if (tree->atr->label == RET)
+    {
+        checkOperator(tree->left);
+        checkOperator(tree->right);
+        result = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
+        instru = newInstruction(tree->atr->label, NULL, NULL, result);
+        node = newThreeDirElement(instru);
+        insertLast(node);
+    }
+    else if (tree->atr->label == STMTWHILE)
     {
 
         int localLabel = label;
@@ -688,22 +724,6 @@ void checkOperator(tree* tree) {
             node = newThreeDirElement(instru);
             insertLast(node);
             checkOperator(tree->right);
-        } 
-        else if (tree->atr->label == RET)
-        {
-            result = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
-            instru = newInstruction(tree->atr->label, NULL, NULL, result);
-            node = newThreeDirElement(instru);
-            insertLast(node);
-            checkOperator(tree->right);
-        }
-        else if (tree->atr->label == MCALL)
-        {
-            result = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
-            instru = newInstruction(tree->atr->label, NULL, NULL, result);
-            node = newThreeDirElement(instru);
-            insertLast(node);
-            checkOperator(tree->right);
         } else {
             checkOperator(tree->right);
         }
@@ -734,7 +754,9 @@ void createAssembly() {
         {   
             if (threeDirList->node->op1->label == CONST){
                 fprintf(fp, "  movl  $%d, -%d(%crbp)\n",  threeDirList->node->op1->value, threeDirList->node->resu->offset,'%');
-            } else {
+            } else if (threeDirList->node->op1->label == NONE && threeDirList->node->op1->idList == NULL) {
+                fprintf(fp, "  movl  %ceax, -%d(%crbp)\n",  '%', threeDirList->node->resu->offset,'%');
+            }else {
                 fprintf(fp, "  movl  -%d(%crbp), %ceax\n",  threeDirList->node->op1->offset,'%','%');
                 fprintf(fp, "  movl  %ceax, -%d(%crbp)\n", '%', threeDirList->node->resu->offset,'%');
             }
@@ -746,10 +768,12 @@ void createAssembly() {
             if (threeDirList->node->op1->label == CONST && threeDirList->node->op2->offset != 0) 
             {
                 fprintf(fp, "  movl  -%d(%crbp),  %ceax\n", threeDirList->node->op2->offset, '%', '%');
-                fprintf(fp, "  addl  $%d,  -%d(%crbp)\n", threeDirList->node->op1->value, threeDirList->node->resu->offset, '%');
+                fprintf(fp, "  addl  $%d,  %ceax\n", threeDirList->node->op1->value, '%');
+                fprintf(fp, "  movl  %ceax,  -%d(%crbp)\n", '%', threeDirList->node->resu->offset, '%');
             } else if (threeDirList->node->op1->offset != 0 && threeDirList->node->op2->label == CONST){
                 fprintf(fp, "  movl  -%d(%crbp),  %ceax\n", threeDirList->node->op1->offset, '%', '%');
-                fprintf(fp, "  addl  $%d,  -%d(%crbp)\n", threeDirList->node->op2->value, threeDirList->node->resu->offset, '%');
+                fprintf(fp, "  addl  $%d,  %ceax\n", threeDirList->node->op2->value, '%');
+                fprintf(fp, "  movl  %ceax,  -%d(%crbp)\n", '%', threeDirList->node->resu->offset, '%');
             } else if (threeDirList->node->op1->offset != 0 && threeDirList->node->op2->offset != 0){
                 fprintf(fp, "  movl  -%d(%crbp),  %ceax\n", threeDirList->node->op1->offset, '%', '%');
                 fprintf(fp, "  addl  -%d(%crbp),  %ceax\n", threeDirList->node->op2->offset, '%', '%');
@@ -980,6 +1004,7 @@ void createAssembly() {
         {
             fprintf(fp, ".L%d\n", threeDirList->node->resu->offset);
         }
+        //FEDE
         else if (threeDirList->node->name == RET)
         {
             fprintf(fp, "  movl  -%d(%crbp),  %ceax\n", threeDirList->node->resu->offset, '%', '%');
@@ -999,13 +1024,39 @@ void sizing(listThreeDir* list) {
             node = pointer->node;
             offset = 0;
         }
-        if (pointer->node->name == IC_LOAD){
+        else if (pointer->node->name == IC_LOAD){
             offset += 8;
         }
-        if (pointer->node->name == IC_END_FUNCTION){
+        else if (pointer->node->name == PARAM){
+            offset += 8;
+        }
+        else if (pointer->node->name == IC_END_FUNCTION){
             node->resu->offset = offset;
             node = NULL;
         }
         pointer = pointer->next;
+    }
+}
+
+void loading(tree* tree) {
+    if (tree == NULL) return; 
+    if (tree->atr->label != COMMA)
+    {
+        threeDir* instru = NULL;
+        node* op1 = NULL;
+        node* op2 = NULL;
+        node* result = NULL;
+        listThreeDir* node = NULL;
+        loading(tree->left);
+        result = (tree->st != NULL) ? tree->st->cSymbol : tree->atr;
+        instru = newInstruction(LOAD_PARAM, NULL, NULL, result);
+        node = newThreeDirElement(instru);
+        insertLast(node);
+        loading(tree->right);
+    }
+    else
+    {
+        loading(tree->left);
+        loading(tree->right);
     }
 }
