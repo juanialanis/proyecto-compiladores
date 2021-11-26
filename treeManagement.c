@@ -12,6 +12,7 @@ int offset = 8;
 
 int label = 2;
 
+int param = 0;
 
 // table of symbols
 stStack* stackOfLevels;
@@ -128,6 +129,11 @@ void treetoString(node* atr){
     while(listIds != NULL) {
         printf(" %s,", listIds->idName);
         listIds = listIds->next;
+    }
+    params* paramList = atr->paramList;
+    while(paramList != NULL) {
+        printf(" %d,", paramList->type);
+        paramList = paramList->next;
     }
     printf(", Offset: %d \n", atr->offset);
 }
@@ -638,14 +644,72 @@ void checkOperator(tree* tree) {
     }
     else if (tree->atr->label == MCALL)
     {
-        printf("aca lo rompo\n");
-        loading(tree->right);
-        printf("no rompio\n");
-        result = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
+        if (tree->right->atr->label != COMMA)
+        {
+            checkOperator(tree->right);
+            result = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
+            instru = newInstruction(LOAD_PARAM, NULL, NULL, result);
+            node = newThreeDirElement(instru);
+            insertLast(node);
+        }
+        else 
+        {
+            checkOperator(tree->right);
+        }
+        result = (tree->st != NULL) ? tree->st->cSymbol : tree->atr;
         instru = newInstruction(tree->atr->label, NULL, NULL, result);
         node = newThreeDirElement(instru);
         insertLast(node);
     } 
+    else if (tree->atr->label == COMMA)
+    {
+        if (tree->left->atr->label == PARAM)
+        {
+            checkOperator(tree->left);
+        }
+        else if (tree->left->atr->label == VAR)
+        {
+            checkOperator(tree->left);
+            result = (tree->left->st != NULL) ? tree->left->st->cSymbol : tree->left->atr;
+            instru = newInstruction(LOAD_PARAM, NULL, NULL, result);
+            node = newThreeDirElement(instru);
+            insertLast(node);
+        }
+        else if (tree->left->atr->label != COMMA)
+        {
+            checkOperator(tree->left);
+            result = (tree->left->st != NULL) ? tree->left->st->cSymbol : tree->left->atr;
+            instru = newInstruction(LOAD_PARAM, NULL, NULL, result);
+            node = newThreeDirElement(instru);
+            insertLast(node);
+        } else {
+            checkOperator(tree->left);
+        }
+        if (tree->right->atr->label == PARAM)
+        {
+            checkOperator(tree->right);
+        }
+        else if (tree->right->atr->label == VAR)
+        {
+            checkOperator(tree->right);
+            result = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
+            instru = newInstruction(LOAD_PARAM, NULL, NULL, result);
+            node = newThreeDirElement(instru);
+            insertLast(node);
+        }
+        else if (tree->right->atr->label != COMMA)
+        {
+            checkOperator(tree->right);
+            result = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
+            instru = newInstruction(LOAD_PARAM, NULL, NULL, result);
+            node = newThreeDirElement(instru);
+            insertLast(node);
+        }
+        else{
+            printf("entre al else\n");
+            checkOperator(tree->right);
+        }
+    }
     else if (tree->atr->label == RET)
     {
         checkOperator(tree->left);
@@ -1004,11 +1068,81 @@ void createAssembly() {
         {
             fprintf(fp, ".L%d\n", threeDirList->node->resu->offset);
         }
-        //FEDE
         else if (threeDirList->node->name == RET)
         {
             fprintf(fp, "  movl  -%d(%crbp),  %ceax\n", threeDirList->node->resu->offset, '%', '%');
         }
+        else if (threeDirList->node->name == MCALL)
+        {
+            fprintf(fp, "  call  %s\n", threeDirList->node->resu->text);
+            param = 0;
+        }
+        else if (threeDirList->node->name == PARAM)
+        {
+            switch (threeDirList->node->resu->offset)
+            {
+            case 8:
+                fprintf(fp, "  movl  %crdi, -%d(%crbp)\n", '%',threeDirList->node->resu->offset, '%');
+                param++;
+                break;
+            case 16:
+                fprintf(fp, "  movl  %crsi, -%d(%crbp)\n", '%',threeDirList->node->resu->offset, '%');
+                param++;
+                break;
+            case 24:
+                fprintf(fp, "  movl  %crdx, -%d(%crbp)\n", '%',threeDirList->node->resu->offset, '%');
+                param++;
+                break;
+            case 32:
+                fprintf(fp, "  movl  %crcx, -%d(%crbp)\n", '%',threeDirList->node->resu->offset, '%');
+                param++;
+                break;
+            case 40:
+                fprintf(fp, "  movl  %cr8,  -%d(%crbp)\n", '%',threeDirList->node->resu->offset, '%');
+                param++;
+                break;
+            case 48:
+                fprintf(fp, "  movl  %cr9,  -%d(%crbp)\n", '%',threeDirList->node->resu->offset, '%');
+                param++;
+                break;
+            default:
+                break;
+            }
+
+        }
+        else if (threeDirList->node->name == LOAD_PARAM)
+        {
+            switch (param)
+            {
+            case 0:
+                fprintf(fp, "  movl  -%d(%crbp),  %crdi\n", threeDirList->node->resu->offset, '%', '%');
+                param++;
+                break;
+            case 1:
+                fprintf(fp, "  movl  -%d(%crbp),  %crsi\n", threeDirList->node->resu->offset, '%', '%');
+                param++;
+                break;
+            case 2:
+                fprintf(fp, "  movl  -%d(%crbp),  %crdx\n", threeDirList->node->resu->offset, '%', '%');
+                param++;
+                break;
+            case 3:
+                fprintf(fp, "  movl  -%d(%crbp),  %crcx\n", threeDirList->node->resu->offset, '%', '%');
+                param++;
+                break;
+            case 4:
+                fprintf(fp, "  movl  -%d(%crbp),  %cr8\n", threeDirList->node->resu->offset, '%', '%');
+                param++;
+                break;
+            case 5:
+                fprintf(fp, "  movl  -%d(%crbp),  %cr9\n", threeDirList->node->resu->offset, '%', '%');
+                param++;
+                break;
+            default:
+                break;
+            }            
+        }
+
         threeDirList = threeDirList->next;
     }
 

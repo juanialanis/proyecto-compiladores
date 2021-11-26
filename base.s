@@ -1,6 +1,6 @@
 	.file	"base.c"
 	.text
-	.comm	a,4,4
+	.comm	a,8,8
 	.comm	x1,4,4
 	.comm	aasdadadad,4,4
 	.globl	f
@@ -14,7 +14,7 @@ f:
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
 	movl	%edi, -4(%rbp)
-	movl	a(%rip), %eax
+	movl	aasdadadad(%rip), %eax
 	addl	$1, %eax
 	movl	%eax, -4(%rbp)
 	nop

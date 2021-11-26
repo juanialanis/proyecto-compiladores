@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 
-int a;
+double a;
 int x1;
 int aasdadadad;
 
@@ -10,12 +10,5 @@ int aasdadadad;
 void f(int x)
 {
     int a;
-    x = a +1;
+    x = aasdadadad +1;
 }
-
-main {
-    f(2);
-}
-
-movl $2, %rdi;
-call f

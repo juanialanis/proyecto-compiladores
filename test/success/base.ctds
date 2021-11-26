@@ -1,7 +1,7 @@
 Program {
-
-  integer sum(integer a, integer b, integer c){
-    return a + b + c;
+  integer global;
+  integer sum(integer a, integer b){
+    return a + b;
   }
 
   void main() {
@@ -11,7 +11,6 @@ Program {
     x = 1;
     y = 1;
     z = 1;
-    x = sum(x,y,1);
-    x = 5;
+    x = sum((x+x),y);
   }
 }
