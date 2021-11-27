@@ -21,13 +21,18 @@ main:
   pushq  %rbp
   movq  %rsp,  %rbp
   subq $24,  %rsp
-  movl  $1, -8(%rbp)
+  movl  $8, global(%rip)
+  movl  global(%rip),  %eax
+  addl  $2,  %eax
+  movl  %eax,  -32(%rbp)
+  movl  -32(%rbp), %eax
+  movl  %eax, -8(%rbp)
   movl  $1, -16(%rbp)
   movl  $1, -24(%rbp)
   movl  -8(%rbp),  %eax
   addl  -8(%rbp),  %eax
-  movl  %eax,  -32(%rbp)
-  movl  -32(%rbp),  %rdx
+  movl  %eax,  -40(%rbp)
+  movl  -40(%rbp),  %rdx
   movl  -16(%rbp),  %rcx
   call  sum
   movl  %eax, -8(%rbp)

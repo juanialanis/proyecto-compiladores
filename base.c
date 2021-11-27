@@ -10,5 +10,7 @@ int aasdadadad;
 void f(int x)
 {
     int a;
-    x = aasdadadad +1;
+    int b;
+    int c;
+    a = b /c ;
 }
