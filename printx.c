@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void f(int x)
+void print_int(int x)
 {
     printf("%d\n", x);
 }

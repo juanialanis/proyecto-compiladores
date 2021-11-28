@@ -7,7 +7,10 @@ Program {
     //Muestra los primenos "n" numeros de la serie de Fibonacci. 
     integer fibonacci(integer n)
       {
-        integer i, term1, term2, nextTerm;
+        integer i;
+        integer term1;
+        integer term2;
+        integer nextTerm;
         term1 = 0;
         term2 = 1;
         i = 1;
@@ -24,7 +27,8 @@ Program {
     // potencia de  x a la n
       integer potencia (integer x, integer n)
       {
-        integer i,r;
+        integer i;
+        integer r;
         i = 1;
         r = x;
         while (i<n)
@@ -38,7 +42,9 @@ Program {
     // retorna el factorial de v
     integer factorial (integer v)
     	{
-      	integer limit,c,fact;
+      	integer limit;
+        integer c;
+        integer fact;
       	limit = 15;
       	if ( v > limit) then
         	{ 
@@ -60,7 +66,8 @@ Program {
     // retorna el n esimo primo
     integer nthprime (integer n) 
       {
-        integer i, divs;
+        integer i;
+        integer divs;
         bool divides;
         i = 0;
         divs = 2;
@@ -92,7 +99,8 @@ Program {
     // retorna el maximo comun divisor de a y b,
     integer gcd (integer a, integer b) 
       {
-        integer i, result;
+        integer i;
+        integer result;
         i = 1;
         result = i;
         while ( i < (a+b)) 
@@ -108,7 +116,8 @@ Program {
 
     void test()
       {
-        integer aux, result;
+        integer aux;
+        integer result;
         result = gcd(factorial(3),factorial(4)); //gcd(6,24) = 6
         print(result);
         aux = nthprime(gcd(factorial(3),factorial(4))); //nthprime(6) = 13
@@ -128,7 +137,10 @@ Program {
 
     integer main()
       {
-        integer x, i, aux, res;
+        integer x;
+        integer i;
+        integer aux;
+        integer res;
         // test fibonacci 
         print_separador(); //Imprime una linea para dividir porque no puedo poner printf("-----------\n")
         x=5; // lee la cantidad de veces que ejecutara la funcion

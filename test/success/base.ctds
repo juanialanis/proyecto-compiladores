@@ -1,17 +1,19 @@
 Program {
-  integer global;
-  integer sum(integer a, integer b){
-    return a + b;
-  }
+  integer print_int(integer i) extern;
 
   void main() {
     integer x;
     integer y;
-    integer z;
-    global = 8;
-    x = global + 2;
-    y = 1;
-    z = 1;
-    x = sum((x+x),y);
+    integer fact;
+    fact = 1;
+    y = 3;
+    x = 0;
+    while (x<y)
+    {
+      print_int(x);
+      x = x+1;
+      fact = fact*x;
+    }
+    return fact;
   }
 }
