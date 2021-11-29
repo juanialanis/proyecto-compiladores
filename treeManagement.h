@@ -148,4 +148,4 @@ int isEquals(listThreeDir* node1, listThreeDir* node2);
 
 void sizing(listThreeDir* list);
 
-void loading(tree* tree);
+int roundUp(int numToRound, int multiple);

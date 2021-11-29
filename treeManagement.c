@@ -645,7 +645,7 @@ void checkOperator(tree* tree) {
     }
     else if (tree->atr->label == MCALL)
     {
-        if (tree->right->atr->label != COMMA)
+        if (tree->right != NULL && tree->right->atr->label != COMMA)
         {
             checkOperator(tree->right);
             result = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
@@ -756,17 +756,19 @@ void checkOperator(tree* tree) {
         checkOperator(tree->left);
         if (tree->atr->label == SUMA || tree->atr->label == MULTIPLICACION || tree->atr->label == RESTA || tree->atr->label == DIVISION || tree->atr->label == LMOD || tree->atr->label == LAND || tree->atr->label == LOR || tree->atr->label == LEQUAL || tree->atr->label == MAYOR || tree->atr->label == MENOR) 
         {
+            checkOperator(tree->right);
             op1 = (tree->left->st != NULL) ? tree->left->st->cSymbol : tree->left->atr;
             op2 = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
             result = (tree->st != NULL) ? tree->st->cSymbol : tree->atr;
             instru = newInstruction(tree->atr->label, op1,op2, result);
             listThreeDir* node = newThreeDirElement(instru);
             insertLast(node);
-            checkOperator(tree->right);
         } 
         else if ( tree->atr->label == STMTASSIGN ) 
         {
             op1 = (tree->right->st != NULL) ? tree->right->st->cSymbol : tree->right->atr;
+            if (tree->right->atr->label ==  MCALL)
+                op1 = tree->right->atr;
             result = (tree->left->st != NULL) ? tree->left->st->cSymbol : tree->left->atr;
             instru = newInstruction(tree->atr->label, op1,op2, result);
             listThreeDir* node = newThreeDirElement(instru);
@@ -809,7 +811,7 @@ void createAssembly() {
         int functionOffset;
         if (threeDirList->node->name == IC_BEGIN_FUNCTION){
             functionOffset = threeDirList->node->resu->offset;
-            fprintf(fp, "  .globl	%s\n  .type   %s, @function\n%s:\n  pushq  %crbp\n  movq  %crsp,  %crbp\n  subq $%d,  %crsp\n", threeDirList->node->resu->text,  threeDirList->node->resu->text, threeDirList->node->resu->text, '%','%','%', functionOffset, '%');
+            fprintf(fp, "  .globl	%s\n  .type   %s, @function\n%s:\n  pushq  %crbp\n  movq  %crsp,  %crbp\n  subq $%d,  %crsp\n", threeDirList->node->resu->text,  threeDirList->node->resu->text, threeDirList->node->resu->text, '%','%','%', threeDirList->node->resu->value, '%');
         }
         else if (threeDirList->node->name == IC_END_FUNCTION){
             fprintf(fp, "  leave\n  ret\n");
@@ -821,9 +823,9 @@ void createAssembly() {
                 fprintf(fp, "  movl  $%d, -%d(%crbp)\n",  threeDirList->node->op1->value, threeDirList->node->resu->offset,'%');
             } else if (threeDirList->node->op1->label == CONST && threeDirList->node->resu->offset == -1){
                 fprintf(fp, "  movl  $%d, %s(%crip)\n",  threeDirList->node->op1->value, threeDirList->node->resu->text,'%');
-            } else if (threeDirList->node->op1->label == NONE && threeDirList->node->op1->idList == NULL && threeDirList->node->resu->offset == -1){
+            } else if (threeDirList->node->op1->label == MCALL && threeDirList->node->resu->offset == -1){
                 fprintf(fp, "  movl  %ceax, %s(%crip)\n",  '%', threeDirList->node->resu->text,'%');
-            } else if (threeDirList->node->op1->label == NONE && threeDirList->node->op1->idList == NULL && threeDirList->node->resu->offset > 0){
+            } else if (threeDirList->node->op1->label == MCALL && threeDirList->node->resu->offset > 0){
                 fprintf(fp, "  movl  %ceax, -%d(%crbp)\n",  '%', threeDirList->node->resu->offset,'%');
             }
             else if (threeDirList->node->op1->offset > 0 && threeDirList->node->resu->offset > 0){
@@ -966,7 +968,7 @@ void createAssembly() {
         {
             functionOffset += 8;
             threeDirList->node->resu->offset = functionOffset;
-                        if (threeDirList->node->op1->label == CONST && threeDirList->node->op2->offset > 0 && threeDirList->node->resu->offset > 0) {
+            if (threeDirList->node->op1->label == CONST && threeDirList->node->op2->offset > 0 && threeDirList->node->resu->offset > 0) {
                 fprintf(fp, "  movl  -%d(%crbp),  %ceax\n", threeDirList->node->op2->offset, '%', '%');
                 fprintf(fp, "  imull  $%d,  %ceax\n", threeDirList->node->op1->value, '%');
                 fprintf(fp, "  movl  %ceax,  -%d(%crbp)\n", '%', threeDirList->node->resu->offset, '%');
@@ -1059,10 +1061,10 @@ void createAssembly() {
                 fprintf(fp, "  je  .L%d\n", label);
                 fprintf(fp, "  movl $0,  %ceax\n", '%');
                 fprintf(fp, "  jmp  .L%d\n", label+1);
-                fprintf(fp, "  .L%d\n", label);
-                fprintf(fp, "  movl $1,  -%ceax\n", '%');
+                fprintf(fp, ".L%d:\n", label);
+                fprintf(fp, "  movl $1,  %ceax\n", '%');
+                fprintf(fp, ".L%d:\n", label+1);
                 fprintf(fp, "  movl %ceax,  -%d(%crbp)\n", '%', threeDirList->node->resu->offset, '%');
-                fprintf(fp, "  .L%d\n", label+1);
             } else if (threeDirList->node->op1->offset == -1 && threeDirList->node->resu->offset > 0)
             {  
                 fprintf(fp, "  movl %s(%crip), %ceax\n", threeDirList->node->op1->text, '%', '%');
@@ -1070,10 +1072,10 @@ void createAssembly() {
                 fprintf(fp, "  je  .L%d\n", label);
                 fprintf(fp, "  movl $0,  %ceax\n", '%');
                 fprintf(fp, "  jmp  .L%d\n", label+1);
-                fprintf(fp, "  .L%d\n", label);
-                fprintf(fp, "  movl $1,  -%ceax\n", '%');
+                fprintf(fp, ".L%d:\n", label);
+                fprintf(fp, "  movl $1,  %ceax\n", '%');
+                fprintf(fp, ".L%d:\n", label+1);
                 fprintf(fp, "  movl %ceax,  -%d(%crbp)\n", '%', threeDirList->node->resu->offset, '%');
-                fprintf(fp, "  .L%d\n", label+1);
             } else if (threeDirList->node->op1->offset > 0 && threeDirList->node->resu->offset == -1)
             {  
                 fprintf(fp, "  movl -%d(%crbp), %ceax\n", threeDirList->node->op1->offset, '%', '%');
@@ -1081,10 +1083,10 @@ void createAssembly() {
                 fprintf(fp, "  je  .L%d\n", label);
                 fprintf(fp, "  movl $0,  %ceax\n", '%');
                 fprintf(fp, "  jmp  .L%d\n", label+1);
-                fprintf(fp, "  .L%d\n", label);
-                fprintf(fp, "  movl $1,  -%ceax\n", '%');
+                fprintf(fp, ".L%d:\n", label);
+                fprintf(fp, "  movl $1,  %ceax\n", '%');
+                fprintf(fp, ".L%d:\n", label+1);
                 fprintf(fp, "  movl %ceax,  %s(%crip)\n", '%', threeDirList->node->resu->text, '%');
-                fprintf(fp, "  .L%d\n", label+1);
             } else if (threeDirList->node->op1->offset == -1 && threeDirList->node->resu->offset == -1)
             {
                 fprintf(fp, "  movl %s(%crip), %ceax\n", threeDirList->node->op1->text, '%', '%');
@@ -1092,10 +1094,10 @@ void createAssembly() {
                 fprintf(fp, "  je  .L%d\n", label);
                 fprintf(fp, "  movl $0,  %ceax\n", '%');
                 fprintf(fp, "  jmp  .L%d\n", label+1);
-                fprintf(fp, "  .L%d\n", label);
-                fprintf(fp, "  movl $1,  -%ceax\n", '%');
+                fprintf(fp, ".L%d:\n", label);
+                fprintf(fp, "  movl $1,  %ceax\n", '%');
+                fprintf(fp, ".L%d:\n", label+1);
                 fprintf(fp, "  movl %ceax,  %s(%crip)\n", '%', threeDirList->node->resu->text, '%');
-                fprintf(fp, "  .L%d\n", label+1);
             }
             label += 2;
         }
@@ -1244,8 +1246,6 @@ void createAssembly() {
         else if (threeDirList->node->name == LOR)
         {
             functionOffset += 8;
-            threeDirList->node->resu->offset = functionOffset;
-                        functionOffset += 8;
             threeDirList->node->resu->offset = functionOffset;
             if (threeDirList->node->op1->offset > 0 && threeDirList->node->op2->offset > 0 && threeDirList->node->resu->offset > 0)
             {
@@ -1601,46 +1601,39 @@ void createAssembly() {
 void sizing(listThreeDir* list) {
     if (list == NULL) return; 
     listThreeDir* pointer = list;
-    threeDir* node = NULL; 
+    threeDir* node = NULL;
+    int sizing = 0;
     while(pointer != NULL){
-        if (pointer->node->name == IC_BEGIN_FUNCTION){
+        int name = pointer->node->name;
+        if (name == IC_BEGIN_FUNCTION){
             node = pointer->node;
             offset = 0;
+            sizing = 0;
         }
-        else if (pointer->node->name == IC_LOAD){
+        else if (name == IC_LOAD){
             offset += 8;
         }
-        else if (pointer->node->name == PARAM){
+        else if (name == SUMA || name == MULTIPLICACION || name == RESTA || name == DIVISION || name == LMOD || name == LAND || name == LOR || name == LEQUAL || name == MAYOR || name == MENOR || name == NEGATIVEEXP || name == NOTEXP) {
+            sizing += 8;
+        }
+        else if (name == PARAM){
             offset += 8;
             pointer->node->resu->offset = offset;
         }
-        else if (pointer->node->name == IC_END_FUNCTION){
+        else if (name == IC_END_FUNCTION){
             node->resu->offset = offset;
+            node->resu->value = roundUp( offset + sizing , 64);
             node = NULL;
         }
         pointer = pointer->next;
     }
 }
 
-void loading(tree* tree) {
-    if (tree == NULL) return; 
-    if (tree->atr->label != COMMA)
-    {
-        threeDir* instru = NULL;
-        node* op1 = NULL;
-        node* op2 = NULL;
-        node* result = NULL;
-        listThreeDir* node = NULL;
-        loading(tree->left);
-        result = (tree->st != NULL) ? tree->st->cSymbol : tree->atr;
-        instru = newInstruction(LOAD_PARAM, NULL, NULL, result);
-        node = newThreeDirElement(instru);
-        insertLast(node);
-        loading(tree->right);
-    }
-    else
-    {
-        loading(tree->left);
-        loading(tree->right);
-    }
+int roundUp(int numToRound, int multiple) { 
+    if(multiple == 0)
+        return numToRound;
+    int roundDown = ( (int) (numToRound) / multiple) * multiple; 
+    int roundUp = roundDown + multiple; 
+    int roundCalc = roundUp; 
+    return (roundCalc); 
 }

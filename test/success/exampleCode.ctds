@@ -1,45 +1,29 @@
 Program
 {
-    bool x,aux, asdasd;
-    integer z,e;
-integer inc(integer x)
-{
-return x + 1 + 2;
-}
-integer get_int() extern;
-void main()  extern ;
-void print_int(integer i)
-{
-bool p;
-integer y;
-integer bv;
-integer z;
-integer x;
-y = get_int();
-z = z - z - z;
-x = bv;
-if (!p) then
-{
-x = x + 1 + 2;
-}
-return print_int(inc(y));
-}
+    void print(integer i) extern;
 
-void print_int2(integer i)
-{
-bool p;
-integer y;
-integer bv;
-integer z;
-integer x;
-y = get_int();
-z = z - z - z;
-x = bv;
-if (!p) then
-{
-x = x + 1 + 2;
-}
-return print_int(inc(y));
-}
-
+    integer main (integer a, integer b) 
+      {
+        integer i;
+        integer result;
+        a = 8;
+        b = 4;
+        i = 1;
+        result = i;
+        a = print(result);
+        while ( i < (a+b)) 
+          {
+            print(1000);
+            print(result);
+            if (((a % i) == 0) &&  ((b%i) == 0 )) then
+              {
+                print(99);
+                print(result);
+                result = i;
+              }
+            i = i+1;
+          }
+        i = print(result);
+        return result;
+      }
 }

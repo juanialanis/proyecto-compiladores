@@ -5,7 +5,7 @@
 potencia:
   pushq  %rbp
   movq  %rsp,  %rbp
-  subq $32,  %rsp
+  subq $64,  %rsp
   movl  %edi, -8(%rbp)
   movl  %esi, -16(%rbp)
   movl  $1, -24(%rbp)
@@ -43,7 +43,7 @@ potencia:
 factorial:
   pushq  %rbp
   movq  %rsp,  %rbp
-  subq $32,  %rsp
+  subq $128,  %rsp
   movl  %edi, -8(%rbp)
   movl  $15, -16(%rbp)
   movl  -8(%rbp),   %eax
@@ -94,7 +94,7 @@ factorial:
 main:
   pushq  %rbp
   movq  %rsp,  %rbp
-  subq $24,  %rsp
+  subq $64,  %rsp
   movl  $2, -8(%rbp)
   movl  $3, -16(%rbp)
   movl  -16(%rbp),  %edi

@@ -2,15 +2,27 @@
 #include <stdio.h>
 
 
-double a;
-int x1;
-int aasdadadad;
+void print(int i);
 
-
-void f(int x)
+//Muestra los primenos "n" numeros de la serie de Fibonacci. 
+int nthprime () 
 {
-    int a;
-    int b;
-    int c;
-    a = b /c ;
+    return 1;
+}
+
+void main(int i)
+{
+    int divs;
+    int divides;
+    divides = 1;
+    while ( (! divides) ) 
+    {
+        print(divides);
+        print(divides);
+    }
+    divs = 2;
+    if (! divides)
+    {
+        print(divides);
+    }
 }

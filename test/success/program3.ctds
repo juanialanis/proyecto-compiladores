@@ -1,0 +1,49 @@
+Program {
+    
+    //integer print_separador() extern; 
+    void print(integer i) extern;
+    
+    //Muestra los primenos "n" numeros de la serie de Fibonacci. 
+    integer nthprime (integer n) 
+    {
+      integer i;
+      integer divs;
+      bool divides;
+      bool aux1;
+      bool aux2;
+      bool aux3;
+      aux1 = true;
+      i = 0;
+      divs = 2;
+      n = n+1;
+      while ( n > 0) 
+        {
+          divides = false; 
+          i = i + 1;
+          while ( (!divides) && divs < i) 
+            {
+              if ((i%divs) == 0) then
+                {
+                  divides = true;
+                }
+              else
+                {
+                  divs = divs+1;
+                }
+            }
+          divs = 2;
+          if (!divides) then
+            {
+              n = n-1;
+            }
+        }
+      return i;
+    }
+
+    integer main() {
+        integer x;
+        x = nthprime(200);
+        print(x);
+    }
+
+  }
