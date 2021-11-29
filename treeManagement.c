@@ -379,7 +379,6 @@ void createSubTableSymbol(tree* tree, symbolTable* tope) {
         }
     }
     else if(tree->atr->label == PARAM) {
-        printf("ENTREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE\n");
         node* idNode;
         tree->atr->offset = offset;
         idNode = newNode(tree->atr->value, tree->atr->line, tree->atr->type, tree->atr->label, tree->atr->text, NULL,NULL, offset);
@@ -618,8 +617,6 @@ void checkOperator(tree* tree) {
     else if (tree->atr->label == PARAM)
     {
         result = (tree->st != NULL) ? tree->st->cSymbol : tree->atr;
-        (tree->st != NULL) ? printf("NO ES NULL") : printf("SI NULL");
-        printf("  %d", tree->st->cSymbol->offset);
         instru = newInstruction(PARAM, NULL, NULL, result);
         node = newThreeDirElement(instru);
         insertLast(node);
@@ -710,7 +707,6 @@ void checkOperator(tree* tree) {
             insertLast(node);
         }
         else{
-            printf("entre al else\n");
             checkOperator(tree->right);
         }
     }
@@ -1480,7 +1476,6 @@ void createAssembly() {
         else if (threeDirList->node->name == MCALL)
         {
             fprintf(fp, "  call  %s\n", threeDirList->node->resu->text);
-            printf("INICIALIZO PARAM EN 0 \n");
             param = 0;
         }
         else if (threeDirList->node->name == PARAM)
@@ -1512,7 +1507,6 @@ void createAssembly() {
         }
         else if (threeDirList->node->name == LOAD_PARAM)
         {
-            printf("USO PARAM TIENE %d \n", param);
             switch (param)
             {
             case 0:
