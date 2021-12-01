@@ -1,19 +1,20 @@
 Program {
   integer print_int(integer i) extern;
 
+  integer sum(integer i) 
+  {
+    if( i == 2) then {
+      return 100;
+    } else {
+      return 1;
+    }
+    return 50;
+  }
+
   void main() {
     integer x;
-    integer y;
-    integer fact;
-    fact = 1;
-    y = 3;
-    x = 0;
-    while (x<y)
-    {
-      print_int(x);
-      x = x+1;
-      fact = fact*x;
-    }
-    return fact;
+    x = 2;
+    x = sum(x);
+    print_int(x); 
   }
 }

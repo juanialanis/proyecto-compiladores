@@ -533,6 +533,8 @@ void findReturns(tree* tree, enum TType type, int* result){
 void createInstructions(tree* tree) {
     insertDecl(tree->left);
     insertStms(tree->right);
+    sizing(threeDirList);
+    createAssembly();
 }
 
 void insertDecl(tree* tree) {
@@ -803,19 +805,21 @@ void createAssembly() {
     FILE * fp;
 
     fp = fopen ("assembly.s", "w+");
-    fprintf(fp, "  .file   %cnombreArchivo.c%c\n  .text\n", '"', '"');
     
     param = 0;
+    int functionOffset;
+    int end_label = 1;
     while (threeDirList != NULL)
     {
-        int functionOffset;
         if (threeDirList->node->name == IC_BEGIN_FUNCTION){
             functionOffset = threeDirList->node->resu->offset;
             fprintf(fp, "  .globl	%s\n  .type   %s, @function\n%s:\n  pushq  %crbp\n  movq  %crsp,  %crbp\n  subq $%d,  %crsp\n", threeDirList->node->resu->text,  threeDirList->node->resu->text, threeDirList->node->resu->text, '%','%','%', threeDirList->node->resu->value, '%');
         }
         else if (threeDirList->node->name == IC_END_FUNCTION){
+            fprintf(fp, ".LR%d:\n",end_label);
             fprintf(fp, "  leave\n  ret\n");
             fprintf(fp, "  .size %s, .-%s\n",  threeDirList->node->resu->text,  threeDirList->node->resu->text);
+            end_label++;
         }
         else if (threeDirList->node->name == STMTASSIGN)
         {   
@@ -1459,14 +1463,17 @@ void createAssembly() {
             if (threeDirList->node->resu->offset == 0)
             {
                 fprintf(fp, "  movl  $%d,  %ceax\n", threeDirList->node->resu->value, '%');
+                fprintf(fp, "  jmp .LR%d\n", end_label );
             }
             else if (threeDirList->node->resu->offset > 0)
             {
                 fprintf(fp, "  movl  -%d(%crbp),  %ceax\n", threeDirList->node->resu->offset, '%', '%');
+                fprintf(fp, "  jmp .LR%d\n", end_label );
             }
             else if (threeDirList->node->resu->offset == -1)
             {
                 fprintf(fp, "  movl  %s(%crip),  %ceax\n", threeDirList->node->resu->text, '%', '%');
+                fprintf(fp, "  jmp .LR%d\n", end_label );
             }
         }
         else if (threeDirList->node->name == IC_LOAD_GLOBAL)
@@ -1475,7 +1482,10 @@ void createAssembly() {
         }
         else if (threeDirList->node->name == MCALL)
         {
+            functionOffset += 8;
+            threeDirList->node->resu->offset = functionOffset;
             fprintf(fp, "  call  %s\n", threeDirList->node->resu->text);
+            fprintf(fp, "  movl  %ceax, -%d(%crbp)\n", '%', threeDirList->node->resu->offset, '%');
             param = 0;
         }
         else if (threeDirList->node->name == PARAM)

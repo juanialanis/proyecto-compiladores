@@ -38,23 +38,22 @@ int yyerror(char *);
 prog: PROGRAM '{' variables methods '}'  { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root, $3, $4); 
-                                                printTree($$,0);
+                                                //printTree($$,0);
                                                 createLevelOfSymbolTable($$);
                                                 checkValidation($$);
                                                 createInstructions($$);
-                                                printInstructions();
+                                                //printInstructions();
+                                                //createAssembly();
                                         };
        | PROGRAM '{' methods '}'          { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL, 0);
                                                 $$ = newTree(root, NULL, $3); 
-                                                printTree($$,0);
+                                                //printTree($$,0);
                                                 createLevelOfSymbolTable($$);
-                                                createInstructions($$);
                                                 checkValidation($$);
-                                                printf("\n");
-                                                printInstructions();
-                                                
-
+                                                createInstructions($$);
+                                                //printInstructions();
+                                                //createAssembly();
                                         };      
        | PROGRAM '{' variables '}'      { 
                                                 node* root = newNode(0, yylineno, None, PROG, NULL, NULL, NULL, 0);
@@ -62,8 +61,9 @@ prog: PROGRAM '{' variables methods '}'  {
                                                 //printTree($$,0);
                                                 createLevelOfSymbolTable($$);
                                                 checkValidation($$);
-                                                printf("voy a crear");
                                                 createInstructions($$);
+                                                //printInstructions();
+                                                //createAssembly();
 
                                         };
        | PROGRAM '{' '}'                { 
@@ -73,7 +73,8 @@ prog: PROGRAM '{' variables methods '}'  {
                                                 createLevelOfSymbolTable($$);
                                                 checkValidation($$);
                                                 createInstructions($$);
-
+                                                //printInstructions();
+                                                //createAssembly();
                                         };
 ;  
 
